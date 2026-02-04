@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
 
 definePageMeta({
   layout: "default",
@@ -70,10 +71,16 @@ const tabs = {
   <div>
     <!-- Hero Section -->
     <section class="relative py-32 md:py-48 px-6 overflow-hidden">
-      <!-- Grid Background -->
+      <!-- Rose Window (Rosace) Notre-Dame -->
       <div
-        class="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_70%_at_50%_50%,#000_70%,transparent_100%)]"
-      ></div>
+        class="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none overflow-hidden"
+      >
+        <img
+          src="https://www.mesvitrauxfavoris.fr/Supp_e/index_htm_files/98833.jpg"
+          alt="Rosace Notre-Dame"
+          class="w-full h-full object-cover opacity-[0.1]"
+        />
+      </div>
 
       <div
         class="container max-w-5xl mx-auto flex flex-col items-center text-center space-y-10"
@@ -292,15 +299,26 @@ const tabs = {
     <section class="py-24 px-6">
       <div class="container max-w-4xl mx-auto">
         <Card
-          class="bg-primary text-primary-foreground overflow-hidden relative border-0 shadow-2xl"
+          class="text-primary-foreground overflow-hidden relative border-0 shadow-2xl"
         >
+          <!-- Dark Map Background (Leaflet) -->
           <div
-            class="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay"
-          ></div>
-          <div
-            class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl"
-          ></div>
-
+            class="absolute inset-0 opacity-[1] grayscale pointer-events-none"
+          >
+            <LMap
+              style="height: 100%; width: 100%"
+              :zoom="16"
+              :center="[48.2973, 4.0744]"
+              :use-global-leaflet="false"
+            >
+              <LTileLayer
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                layer-type="base"
+                name="CartoDB Dark"
+              />
+            </LMap>
+          </div>
+          <div class="absolute inset-0 bg-primary/85"></div>
           <CardContent class="p-12 md:p-16 text-center space-y-8 relative z-10">
             <h2 class="text-3xl md:text-5xl font-bold tracking-tight">
               Rejoignez l'Assemblée
@@ -323,3 +341,15 @@ const tabs = {
     </section>
   </div>
 </template>
+
+<style scoped>
+:deep(.leaflet-control-container) {
+  display: none !important;
+}
+:deep(.leaflet-control-zoom) {
+  display: none !important;
+}
+:deep(.leaflet-control-attribution) {
+  display: none !important;
+}
+</style>
