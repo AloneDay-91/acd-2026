@@ -58,12 +58,12 @@
 
 :root {
   --background: #fcfcfc;
-  --foreground: #000000;
+  --foreground: #4d2465;
   --card: #ffffff;
   --card-foreground: #000000;
   --popover: #fcfcfc;
   --popover-foreground: #000000;
-  --primary: #000000;
+  --primary: #4d2465;
   --primary-foreground: #ffffff;
   --secondary: #ebebeb;
   --secondary-foreground: #000000;
