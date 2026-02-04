@@ -53,7 +53,7 @@ async function handleSignOut() {
           <Badge variant="outline" class="rounded-full text-xs">
             <div class="relative flex h-2 w-2">
               <span
-                class="relative inline-flex rounded-full h-2 w-2 bg-muted-foreground"
+                class="relative inline-flex rounded-full h-2 w-2 bg-primary"
               ></span>
             </div>
             Édition {{ new Date().getFullYear() }}</Badge
@@ -76,11 +76,6 @@ async function handleSignOut() {
             <NavigationMenuItem>
               <NavigationMenuLink as-child>
                 <NuxtLink to="/acces">Accès</NuxtLink>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem v-if="session.data">
-              <NavigationMenuLink as-child>
-                <NuxtLink to="/admin">Admin</NuxtLink>
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
@@ -109,6 +104,15 @@ async function handleSignOut() {
 
         <!-- Logged in -->
         <template v-else>
+          <Button
+            variant="secondary"
+            size="sm"
+            class="rounded-full hidden md:inline-flex"
+            as-child
+          >
+            <NuxtLink to="/admin">Dashboard</NuxtLink>
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
               <Button variant="ghost" size="icon" class="rounded-full">
@@ -197,7 +201,20 @@ async function handleSignOut() {
                   <NuxtLink to="/acces">Accès</NuxtLink>
                 </SheetClose>
                 <SheetClose v-if="session.data" as-child>
-                  <NuxtLink to="/admin">Espace Admin</NuxtLink>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    class="w-full justify-start"
+                    as-child
+                  >
+                    <NuxtLink to="/admin">
+                      <Icon
+                        name="lucide:layout-dashboard"
+                        class="mr-2 h-4 w-4"
+                      />
+                      Dashboard
+                    </NuxtLink>
+                  </Button>
                 </SheetClose>
               </div>
             </div>
