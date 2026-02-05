@@ -3,28 +3,57 @@ definePageMeta({
   layout: "admin",
 });
 
-// Fetch registrations
-const { data: registrations } = await useFetch("/api/registrations");
+interface Registration {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  totalPrice: number | string;
+  status: "PENDING" | "CONFIRMED" | "CANCELLED";
+  createdAt: string;
+  meals?: any[];
+  activities?: any[];
+}
 
-// Stats
-const stats = computed(() => {
-  const regs = registrations.value || [];
-  return {
-    total: regs.length,
-    confirmed: regs.filter((r: any) => r.status === "CONFIRMED").length,
-    pending: regs.filter((r: any) => r.status === "PENDING").length,
-    cancelled: regs.filter((r: any) => r.status === "CANCELLED").length,
-    revenue: regs.reduce(
-      (acc: number, r: any) => acc + Number(r.totalPrice || 0),
-      0,
-    ),
-  };
+const router = useRouter();
+
+// Fetch registrations
+const { data: registrations, status } =
+  await useFetch<Registration[]>("/api/registrations");
+
+// Search and filters
+const searchQuery = ref("");
+const statusFilter = ref<string | null>(null);
+
+const filteredRegistrations = computed(() => {
+  let result = registrations.value || [];
+
+  if (statusFilter.value) {
+    result = result.filter((r) => r.status === statusFilter.value);
+  }
+
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    result = result.filter(
+      (r) =>
+        r.firstName.toLowerCase().includes(query) ||
+        r.lastName.toLowerCase().includes(query) ||
+        r.email.toLowerCase().includes(query),
+    );
+  }
+
+  return result;
 });
 
+function goToDetail(id: string) {
+  router.push(`/admin/inscriptions/${id}`);
+}
+
 const statusColors: Record<string, string> = {
-  CONFIRMED: "bg-green-500/10 text-green-500",
-  PENDING: "bg-yellow-500/10 text-yellow-500",
-  CANCELLED: "bg-red-500/10 text-red-500",
+  CONFIRMED: "bg-green-500/10 text-green-600 dark:text-green-400",
+  PENDING: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+  CANCELLED: "bg-red-500/10 text-red-600 dark:text-red-400",
 };
 
 const statusLabels: Record<string, string> = {
@@ -32,10 +61,18 @@ const statusLabels: Record<string, string> = {
   PENDING: "En attente",
   CANCELLED: "Annulé",
 };
+
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
 </script>
 
 <template>
-  <div class="max-w-6xl space-y-6">
+  <div class="max-w-5xl space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
@@ -44,166 +81,83 @@ const statusLabels: Record<string, string> = {
           Gestion des inscriptions à l'événement
         </p>
       </div>
-      <div class="flex gap-2">
-        <Button variant="outline" class="rounded-full">
-          <Icon name="lucide:download" class="mr-2 h-4 w-4" />
-          Exporter CSV
-        </Button>
-        <Button class="rounded-full">
-          <Icon name="lucide:plus" class="mr-2 h-4 w-4" />
-          Nouvelle inscription
-        </Button>
-      </div>
-    </div>
-
-    <!-- Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-      <Card class="rounded-2xl">
-        <CardContent class="pt-6 text-center">
-          <p class="text-3xl font-bold">{{ stats.total }}</p>
-          <p class="text-sm text-muted-foreground">Total</p>
-        </CardContent>
-      </Card>
-      <Card class="rounded-2xl">
-        <CardContent class="pt-6 text-center">
-          <p class="text-3xl font-bold text-green-500">{{ stats.confirmed }}</p>
-          <p class="text-sm text-muted-foreground">Confirmés</p>
-        </CardContent>
-      </Card>
-      <Card class="rounded-2xl">
-        <CardContent class="pt-6 text-center">
-          <p class="text-3xl font-bold text-yellow-500">{{ stats.pending }}</p>
-          <p class="text-sm text-muted-foreground">En attente</p>
-        </CardContent>
-      </Card>
-      <Card class="rounded-2xl">
-        <CardContent class="pt-6 text-center">
-          <p class="text-3xl font-bold text-red-500">{{ stats.cancelled }}</p>
-          <p class="text-sm text-muted-foreground">Annulés</p>
-        </CardContent>
-      </Card>
-      <Card class="rounded-2xl">
-        <CardContent class="pt-6 text-center">
-          <p class="text-3xl font-bold">{{ stats.revenue.toFixed(0) }} €</p>
-          <p class="text-sm text-muted-foreground">Revenus</p>
-        </CardContent>
-      </Card>
+      <Button variant="outline" class="rounded-full">
+        <Icon name="lucide:download" class="h-4 w-4" />
+        Exporter
+      </Button>
     </div>
 
     <!-- Filters -->
     <div class="flex items-center gap-3">
-      <div class="relative flex-1 max-w-sm">
-        <Icon
-          name="lucide:search"
-          class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-        />
-        <Input
-          placeholder="Rechercher par nom, email..."
-          class="pl-9 rounded-full"
-        />
-      </div>
-      <Button variant="outline" class="rounded-full">
-        <Icon name="lucide:filter" class="mr-2 h-4 w-4" />
-        Filtrer
-      </Button>
-      <Button variant="outline" class="rounded-full"> Tous </Button>
-      <Button variant="outline" class="rounded-full text-green-500">
-        Confirmés
-      </Button>
-      <Button variant="outline" class="rounded-full text-yellow-500">
-        En attente
-      </Button>
+      <Select v-model="statusFilter">
+        <SelectTrigger class="w-44 rounded-full bg-card">
+          <SelectValue placeholder="Tous les statuts" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem :value="null">Tous les statuts</SelectItem>
+          <SelectItem value="CONFIRMED">Confirmé</SelectItem>
+          <SelectItem value="PENDING">En attente</SelectItem>
+          <SelectItem value="CANCELLED">Annulé</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+
+    <!-- Loading State -->
+    <div v-if="status === 'pending'" class="flex justify-center py-12">
+      <Icon
+        name="lucide:loader-2"
+        class="h-8 w-8 animate-spin text-muted-foreground"
+      />
     </div>
 
     <!-- Table -->
-    <Card class="rounded-2xl">
-      <CardContent class="p-0">
-        <div
-          v-if="!registrations || registrations.length === 0"
-          class="text-center py-16"
-        >
-          <Icon
-            name="lucide:inbox"
-            class="h-16 w-16 mx-auto text-muted-foreground/30 mb-4"
-          />
-          <p class="text-lg font-medium">Aucune inscription</p>
-          <p class="text-muted-foreground">Les inscriptions apparaîtront ici</p>
-        </div>
+    <div v-else class="rounded-xl overflow-hidden border-0">
+      <!-- Table Header -->
+      <div
+        class="grid grid-cols-12 gap-4 px-4 py-3 text-sm font-medium text-muted-foreground"
+      >
+        <div class="col-span-5">Participant</div>
+        <div class="col-span-2">Date</div>
+        <div class="col-span-2">Statut</div>
+        <div class="col-span-3 text-right">Montant</div>
+      </div>
 
-        <Table v-else>
-          <TableHeader>
-            <TableRow class="hover:bg-transparent">
-              <TableHead>Participant</TableHead>
-              <TableHead>IUT</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead class="text-right">Montant</TableHead>
-              <TableHead class="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow
-              v-for="reg in registrations"
-              :key="reg.id"
-              class="cursor-pointer"
-            >
-              <TableCell>
-                <div class="flex items-center gap-3">
-                  <Avatar class="h-9 w-9">
-                    <AvatarFallback
-                      class="bg-foreground text-background text-sm"
-                    >
-                      {{ reg.firstName?.charAt(0)
-                      }}{{ reg.lastName?.charAt(0) }}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p class="font-medium">
-                      {{ reg.firstName }} {{ reg.lastName }}
-                    </p>
-                    <p class="text-xs text-muted-foreground">{{ reg.email }}</p>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell class="text-muted-foreground">{{
-                reg.iut || "-"
-              }}</TableCell>
-              <TableCell class="text-muted-foreground">
-                {{
-                  new Date(reg.createdAt).toLocaleDateString("fr-FR", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })
-                }}
-              </TableCell>
-              <TableCell>
-                <Badge
-                  :class="[
-                    'rounded-full',
-                    statusColors[reg.status] || 'bg-muted',
-                  ]"
-                >
-                  {{ statusLabels[reg.status] || reg.status }}
-                </Badge>
-              </TableCell>
-              <TableCell class="text-right font-semibold"
-                >{{ Number(reg.totalPrice).toFixed(2) }} €</TableCell
-              >
-              <TableCell class="text-right">
-                <div class="flex items-center justify-end gap-1">
-                  <Button variant="ghost" size="icon" class="h-8 w-8">
-                    <Icon name="lucide:eye" class="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" class="h-8 w-8">
-                    <Icon name="lucide:pencil" class="h-4 w-4" />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+      <!-- Empty State -->
+      <div v-if="filteredRegistrations.length === 0" class="text-center py-16">
+        <Icon
+          name="lucide:inbox"
+          class="h-12 w-12 mx-auto text-muted-foreground/30 mb-4"
+        />
+        <p class="text-muted-foreground">Aucune inscription trouvée</p>
+      </div>
+
+      <!-- Table Rows -->
+      <div
+        v-for="reg in filteredRegistrations"
+        :key="reg.id"
+        class="grid grid-cols-12 gap-4 px-4 py-4 items-center cursor-pointer transition-colors hover:bg-muted/50 border-t border-border/50"
+        @click="goToDetail(reg.id)"
+      >
+        <div class="col-span-5 flex items-center gap-3">
+          <Avatar class="h-9 w-9">
+            <AvatarFallback class="bg-muted text-foreground text-xs">
+              {{ reg.firstName?.charAt(0) }}{{ reg.lastName?.charAt(0) }}
+            </AvatarFallback>
+          </Avatar>
+          <span class="text-sm truncate">{{ reg.email }}</span>
+        </div>
+        <div class="col-span-2 text-sm text-muted-foreground">
+          {{ formatDate(reg.createdAt) }}
+        </div>
+        <div class="col-span-2">
+          <Badge :class="['rounded-full text-xs', statusColors[reg.status]]">
+            {{ statusLabels[reg.status] }}
+          </Badge>
+        </div>
+        <div class="col-span-3 text-right text-sm font-medium">
+          {{ Number(reg.totalPrice).toFixed(2) }} €
+        </div>
+      </div>
+    </div>
   </div>
 </template>

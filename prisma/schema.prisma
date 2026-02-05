@@ -44,17 +44,33 @@ model session {
   userId    String
   user      user     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  // Admin/Org fields
+  impersonatedBy       String?
+
+
   @@index([userId])
 }
 
 model user {
   id            String    @id
-  name          String
+  name          String    @default("")
+  firstName     String    @default("")
+  lastName      String    @default("")
   email         String    @unique
   emailVerified Boolean
   image         String?
+  tel           String?
+
   createdAt     DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt     DateTime  @default(now()) @db.Timestamptz(6)
+  
+  // Admin fields
+  role          String?
+  banned        Boolean?
+  banReason     String?
+  banExpires    DateTime?
+  iut           String?
+
   account       account[]
   session       session[]
 }
@@ -69,6 +85,7 @@ model verification {
 
   @@index([identifier])
 }
+
 
 // ============================================
 // ACD Custom Models
@@ -107,13 +124,15 @@ enum MealType {
 
 // Options de repas (entrées, plats, desserts)
 model MealOption {
-  id         String     @id @default(uuid())
-  mealId     String
-  meal       Meal       @relation(fields: [mealId], references: [id], onDelete: Cascade)
-  name       String
-  optionType OptionType
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id          String     @id @default(uuid())
+  mealId      String
+  meal        Meal       @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  name        String
+  optionType  OptionType
+  hasAllergens Boolean   @default(false)
+  allergens   String[]   // Array of allergen types
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   starterChoices RegistrationMeal[] @relation("StarterOption")
   mainChoices    RegistrationMeal[] @relation("MainOption")
@@ -152,6 +171,7 @@ model Registration {
   status     RegistrationStatus @default(PENDING)
   meals      RegistrationMeal[]
   activities RegistrationActivity[]
+  order      Order?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -160,6 +180,35 @@ enum RegistrationStatus {
   PENDING
   CONFIRMED
   CANCELLED
+}
+
+// Commandes / Paiements
+model Order {
+  id              String        @id @default(uuid())
+  orderNumber     String        @unique
+  registrationId  String        @unique
+  registration    Registration  @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  amount          Decimal       @db.Decimal(10, 2)
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentMethod   PaymentMethod?
+  notes           String?
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CARD
+  TRANSFER
+  CASH
+  FREE
 }
 
 // Choix de repas par inscription
@@ -200,6 +249,33 @@ model Setting {
   showInscription  Boolean  @default(true)
   showActivities   Boolean  @default(true)
   showMeals        Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Hôtels partenaires
+model Hotel {
+  id            String   @id @default(uuid())
+  name          String
+  address       String
+  postalCode    String
+  city          String
+  latitude      Float?
+  longitude     Float?
+  googleMapsUrl String?
+  websiteUrl    String?
+  phone         String?
+  email         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// IUT (Institut Universitaire de Technologie)
+model Iut {
+  id        String   @id @default(uuid())
+  name      String
+  city      String?
+  code      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
