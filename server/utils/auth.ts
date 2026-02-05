@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { magicLink } from "better-auth/plugins";
+import { magicLink, admin } from "better-auth/plugins";
 import { Pool } from "pg";
 import nodemailer from "nodemailer";
 import { render } from "@vue-email/render";
@@ -48,5 +48,6 @@ export const auth = betterAuth({
       },
       expiresIn: 300, // 5 minutes
     }),
+    admin(),
   ],
 });

@@ -44,17 +44,33 @@ model session {
   userId    String
   user      user     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  // Admin/Org fields
+  impersonatedBy       String?
+
+
   @@index([userId])
 }
 
 model user {
   id            String    @id
-  name          String
+  name          String    @default("")
+  firstName     String    @default("")
+  lastName      String    @default("")
   email         String    @unique
   emailVerified Boolean
   image         String?
+  tel           String?
+
   createdAt     DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt     DateTime  @default(now()) @db.Timestamptz(6)
+  
+  // Admin fields
+  role          String?
+  banned        Boolean?
+  banReason     String?
+  banExpires    DateTime?
+  iut           String?
+
   account       account[]
   session       session[]
 }
@@ -69,6 +85,7 @@ model verification {
 
   @@index([identifier])
 }
+
 
 // ============================================
 // ACD Custom Models
@@ -232,6 +249,33 @@ model Setting {
   showInscription  Boolean  @default(true)
   showActivities   Boolean  @default(true)
   showMeals        Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Hôtels partenaires
+model Hotel {
+  id            String   @id @default(uuid())
+  name          String
+  address       String
+  postalCode    String
+  city          String
+  latitude      Float?
+  longitude     Float?
+  googleMapsUrl String?
+  websiteUrl    String?
+  phone         String?
+  email         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// IUT (Institut Universitaire de Technologie)
+model Iut {
+  id        String   @id @default(uuid())
+  name      String
+  city      String?
+  code      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

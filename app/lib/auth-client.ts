@@ -1,8 +1,8 @@
 import { createAuthClient } from "better-auth/vue";
-import { magicLinkClient } from "better-auth/client/plugins";
+import { magicLinkClient, adminClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
-  plugins: [magicLinkClient()],
+  plugins: [magicLinkClient(), adminClient()],
 });
 
 // Export specific methods for convenience

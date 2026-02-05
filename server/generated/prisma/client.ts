@@ -104,3 +104,13 @@ export type RegistrationActivity = Prisma.RegistrationActivityModel
  * 
  */
 export type Setting = Prisma.SettingModel
+/**
+ * Model Hotel
+ * 
+ */
+export type Hotel = Prisma.HotelModel
+/**
+ * Model Iut
+ * 
+ */
+export type Iut = Prisma.IutModel

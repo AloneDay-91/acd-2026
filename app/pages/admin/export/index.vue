@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { toast } from "vue-sonner";
 import { DatePicker } from "@/components/ui/date-picker";
 
 definePageMeta({
@@ -8,6 +9,9 @@ definePageMeta({
 const filterByDate = ref(false);
 const startDate = ref<Date | null>(null);
 const endDate = ref<Date | null>(null);
+const includeHeaders = ref(true);
+const anonymize = ref(false);
+const isExporting = ref(false);
 
 const exportFormats = [
   {
@@ -15,18 +19,6 @@ const exportFormats = [
     name: "CSV",
     icon: "lucide:file-text",
     description: "Format texte universel",
-  },
-  {
-    id: "xlsx",
-    name: "Excel",
-    icon: "lucide:file-spreadsheet",
-    description: "Format Microsoft Excel",
-  },
-  {
-    id: "pdf",
-    name: "PDF",
-    icon: "lucide:file",
-    description: "Document imprimable",
   },
   {
     id: "json",
@@ -40,28 +32,28 @@ const dataCategories = ref([
   {
     id: "registrations",
     name: "Inscriptions",
-    count: 142,
+    count: 0,
     icon: "lucide:users",
     selected: true,
   },
   {
     id: "events",
     name: "Événements",
-    count: 12,
+    count: 0,
     icon: "lucide:calendar",
     selected: false,
   },
   {
     id: "meals",
     name: "Repas",
-    count: 4,
+    count: 0,
     icon: "lucide:utensils",
     selected: false,
   },
   {
     id: "activities",
     name: "Activités",
-    count: 8,
+    count: 0,
     icon: "lucide:activity",
     selected: false,
   },
@@ -69,29 +61,79 @@ const dataCategories = ref([
 
 const selectedFormat = ref("csv");
 
-const recentExports = ref([
-  {
-    id: 1,
-    name: "inscriptions_20260204.csv",
-    date: "2026-02-04T14:30:00",
-    size: "45 KB",
-    category: "Inscriptions",
-  },
-  {
-    id: 2,
-    name: "programme_complet.xlsx",
-    date: "2026-02-03T10:15:00",
-    size: "128 KB",
-    category: "Programme",
-  },
-  {
-    id: 3,
-    name: "statistiques_janvier.pdf",
-    date: "2026-02-01T16:45:00",
-    size: "256 KB",
-    category: "Statistiques",
-  },
-]);
+const selectedCategories = computed(() =>
+  dataCategories.value.filter((c) => c.selected).map((c) => c.id),
+);
+
+// Fetch counts on mount
+const fetchCounts = async () => {
+  try {
+    const counts = await $fetch<Record<string, number>>("/api/export/counts");
+    for (const cat of dataCategories.value) {
+      if (counts[cat.id] !== undefined) {
+        cat.count = counts[cat.id] ?? 0;
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching counts:", err);
+  }
+};
+
+// Export data
+const handleExport = async () => {
+  if (!selectedCategories.value.length) {
+    toast.error("Veuillez sélectionner au moins une catégorie");
+    return;
+  }
+
+  isExporting.value = true;
+  try {
+    const response = await $fetch("/api/export", {
+      method: "POST",
+      body: {
+        categories: selectedCategories.value,
+        format: selectedFormat.value,
+        includeHeaders: includeHeaders.value,
+        anonymize: anonymize.value,
+        startDate:
+          filterByDate.value && startDate.value
+            ? startDate.value.toISOString()
+            : undefined,
+        endDate:
+          filterByDate.value && endDate.value
+            ? endDate.value.toISOString()
+            : undefined,
+      },
+    });
+
+    // Create blob and download
+    const isJson = selectedFormat.value === "json";
+    const content = isJson ? JSON.stringify(response, null, 2) : response;
+    const blob = new Blob([content as string], {
+      type: isJson ? "application/json" : "text/csv;charset=utf-8;",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `export_${new Date().toISOString().split("T")[0]}.${selectedFormat.value}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast.success("Export téléchargé avec succès");
+  } catch (err: any) {
+    console.error("Export error:", err);
+    toast.error(err.data?.statusMessage || "Erreur lors de l'export");
+  } finally {
+    isExporting.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchCounts();
+});
 </script>
 
 <template>
@@ -212,7 +254,7 @@ const recentExports = ref([
                   Ajouter les noms de colonnes
                 </p>
               </div>
-              <Switch :default-checked="true" />
+              <Switch v-model:checked="includeHeaders" />
             </div>
             <Separator />
             <div class="space-y-4">
@@ -244,44 +286,68 @@ const recentExports = ref([
                   Masquer les informations personnelles
                 </p>
               </div>
-              <Switch />
+              <Switch v-model:checked="anonymize" />
             </div>
           </CardContent>
           <CardFooter>
-            <Button class="w-full rounded-full" size="lg">
-              <Icon name="lucide:download" class="mr-2 h-4 w-4" />
-              Exporter les données
+            <Button
+              class="w-full rounded-full"
+              size="lg"
+              @click="handleExport"
+              :disabled="isExporting || !selectedCategories.length"
+            >
+              <Icon
+                v-if="isExporting"
+                name="lucide:loader-2"
+                class="mr-2 h-4 w-4 animate-spin"
+              />
+              <Icon v-else name="lucide:download" class="mr-2 h-4 w-4" />
+              {{ isExporting ? "Export en cours..." : "Exporter les données" }}
             </Button>
           </CardFooter>
         </Card>
       </div>
 
-      <!-- Recent Exports -->
+      <!-- Info Card -->
       <div>
         <Card class="rounded-2xl">
           <CardHeader>
-            <CardTitle>Exports récents</CardTitle>
-            <CardDescription
-              >Téléchargez vos exports précédents</CardDescription
-            >
+            <CardTitle>Informations</CardTitle>
+            <CardDescription>Conseils d'export</CardDescription>
           </CardHeader>
-          <CardContent class="space-y-3">
-            <div
-              v-for="exp in recentExports"
-              :key="exp.id"
-              class="flex items-center gap-3 p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
-            >
-              <Icon name="lucide:file" class="h-8 w-8 text-muted-foreground" />
-              <div class="flex-1 min-w-0">
-                <p class="font-medium text-sm truncate">{{ exp.name }}</p>
+          <CardContent class="space-y-4">
+            <div class="flex items-start gap-3">
+              <Icon name="lucide:info" class="h-5 w-5 text-blue-500 mt-0.5" />
+              <div>
+                <p class="font-medium text-sm">Format CSV</p>
                 <p class="text-xs text-muted-foreground">
-                  {{ exp.size }} •
-                  {{ new Date(exp.date).toLocaleDateString("fr-FR") }}
+                  Compatible avec Excel, Google Sheets et autres tableurs.
                 </p>
               </div>
-              <Button variant="ghost" size="icon" class="h-8 w-8 shrink-0">
-                <Icon name="lucide:download" class="h-4 w-4" />
-              </Button>
+            </div>
+            <div class="flex items-start gap-3">
+              <Icon
+                name="lucide:shield"
+                class="h-5 w-5 text-green-500 mt-0.5"
+              />
+              <div>
+                <p class="font-medium text-sm">Anonymisation</p>
+                <p class="text-xs text-muted-foreground">
+                  Masque les noms, emails et téléphones pour le partage.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <Icon
+                name="lucide:calendar"
+                class="h-5 w-5 text-orange-500 mt-0.5"
+              />
+              <div>
+                <p class="font-medium text-sm">Filtre par date</p>
+                <p class="text-xs text-muted-foreground">
+                  Filtrez les données par période de création.
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>

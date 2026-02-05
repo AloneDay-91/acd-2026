@@ -27,13 +27,12 @@ const navItems = [
   { title: "Activités", icon: "lucide:activity", href: "/admin/activites" },
   { title: "Inscriptions", icon: "lucide:ticket", href: "/admin/inscriptions" },
   { title: "Commandes", icon: "lucide:receipt", href: "/admin/orders" },
+  { title: "Hôtels", icon: "lucide:hotel", href: "/admin/hotels" },
 ];
 
 const navItemsAdmin = [
-  { title: "Utilisateurs", icon: "lucide:users", href: "/admin/utilisateurs" },
-  { title: "Rôles", icon: "lucide:shield", href: "/admin/roles" },
-  { title: "Logs", icon: "lucide:file-text", href: "/admin/logs" },
-  { title: "Emails", icon: "lucide:mail", href: "/admin/emails" },
+  { title: "Utilisateurs", icon: "lucide:users", href: "/admin/users" },
+  { title: "Liste IUT", icon: "lucide:building-2", href: "/admin/iuts" },
   { title: "Export", icon: "lucide:download", href: "/admin/export" },
 ];
 
