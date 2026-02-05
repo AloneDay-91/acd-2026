@@ -60,6 +60,7 @@ export const ModelName = {
   MealOption: 'MealOption',
   Activity: 'Activity',
   Registration: 'Registration',
+  Order: 'Order',
   RegistrationMeal: 'RegistrationMeal',
   RegistrationActivity: 'RegistrationActivity',
   Setting: 'Setting'
@@ -172,6 +173,8 @@ export const MealOptionScalarFieldEnum = {
   mealId: 'mealId',
   name: 'name',
   optionType: 'optionType',
+  hasAllergens: 'hasAllergens',
+  allergens: 'allergens',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -208,6 +211,22 @@ export const RegistrationScalarFieldEnum = {
 } as const
 
 export type RegistrationScalarFieldEnum = (typeof RegistrationScalarFieldEnum)[keyof typeof RegistrationScalarFieldEnum]
+
+
+export const OrderScalarFieldEnum = {
+  id: 'id',
+  orderNumber: 'orderNumber',
+  registrationId: 'registrationId',
+  amount: 'amount',
+  paymentStatus: 'paymentStatus',
+  paymentMethod: 'paymentMethod',
+  notes: 'notes',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
 export const RegistrationMealScalarFieldEnum = {

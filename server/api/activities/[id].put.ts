@@ -1,0 +1,28 @@
+export default defineEventHandler(async (event) => {
+  const id = getRouterParam(event, "id");
+  const body = await readBody(event);
+
+  if (!id) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "ID is required",
+    });
+  }
+
+  const activity = await prisma.activity.update({
+    where: { id },
+    data: {
+      name: body.name,
+      description: body.description,
+      date: body.date ? new Date(body.date) : undefined,
+      startTime: body.startTime,
+      endTime: body.endTime,
+      maxParticipants: body.maxParticipants
+        ? Number(body.maxParticipants)
+        : null,
+      price: body.price ? Number(body.price) : 0,
+    },
+  });
+
+  return activity;
+});

@@ -1,0 +1,434 @@
+<script setup lang="ts">
+import { toast } from "vue-sonner";
+
+definePageMeta({
+  layout: "admin",
+});
+
+const route = useRoute();
+const router = useRouter();
+
+interface Order {
+  id: string;
+  orderNumber: string;
+  amount: number | string;
+  paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+  paymentMethod?: string | null;
+  notes?: string | null;
+  paidAt?: string | null;
+  createdAt: string;
+  registration: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    totalPrice: number | string;
+    status: string;
+    meals?: any[];
+    activities?: any[];
+  };
+}
+
+const { data: order, refresh } = await useFetch<Order>(
+  `/api/orders/${route.params.id}`,
+);
+
+const isLoading = ref(false);
+
+async function updatePaymentStatus(status: string, method?: string) {
+  if (!order.value) return;
+
+  isLoading.value = true;
+  try {
+    await $fetch(`/api/orders/${order.value.id}/status`, {
+      method: "PATCH",
+      body: {
+        paymentStatus: status,
+        paymentMethod: method,
+      },
+    });
+    toast.success("Statut mis à jour");
+    refresh();
+  } catch (error) {
+    console.error(error);
+    toast.error("Erreur lors de la mise à jour");
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+function copyToClipboard(text: string) {
+  if (import.meta.client) {
+    navigator.clipboard.writeText(text);
+    toast.success("Copié !");
+  }
+}
+
+const paymentStatusColors: Record<string, string> = {
+  PAID: "bg-green-500/10 text-green-600 dark:text-green-400",
+  PENDING: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+  FAILED: "bg-red-500/10 text-red-600 dark:text-red-400",
+  REFUNDED: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+};
+
+const paymentStatusLabels: Record<string, string> = {
+  PAID: "Payé",
+  PENDING: "En attente",
+  FAILED: "Échoué",
+  REFUNDED: "Remboursé",
+};
+
+const paymentMethodLabels: Record<string, string> = {
+  CARD: "Carte bancaire",
+  TRANSFER: "Virement",
+  CASH: "Espèces",
+  FREE: "Gratuit",
+};
+
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+const invoiceItems = computed(() => {
+  if (!order.value?.registration) return [];
+
+  const items: { name: string; price: number }[] = [];
+
+  order.value.registration.meals?.forEach((m) => {
+    items.push({
+      name: m.meal?.name || "Repas",
+      price: Number(m.meal?.price || 0),
+    });
+  });
+
+  order.value.registration.activities?.forEach((a) => {
+    items.push({
+      name: a.activity?.name || "Activité",
+      price: Number(a.activity?.price || 0),
+    });
+  });
+
+  return items;
+});
+</script>
+
+<template>
+  <div v-if="order" class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-start justify-between">
+      <div class="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          class="rounded-full"
+          @click="router.push('/admin/orders')"
+        >
+          <Icon name="lucide:arrow-left" class="h-5 w-5" />
+        </Button>
+        <div>
+          <h1 class="text-2xl font-bold">Commande {{ order.orderNumber }}</h1>
+          <p class="text-muted-foreground">{{ order.registration.email }}</p>
+        </div>
+      </div>
+      <Badge
+        :class="[
+          'rounded-full px-3 py-1',
+          paymentStatusColors[order.paymentStatus],
+        ]"
+      >
+        {{ paymentStatusLabels[order.paymentStatus] }}
+      </Badge>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Main Content - Invoice -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Order Card -->
+        <Card class="rounded-xl overflow-hidden">
+          <div class="p-6 flex items-center gap-4">
+            <div class="w-18 flex items-center justify-center">
+              <Icon
+                name="lucide:receipt"
+                class="text-muted-foreground"
+                size="24"
+              />
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-semibold text-lg">{{ order.orderNumber }}</h3>
+                <Badge
+                  :class="[
+                    'rounded-full',
+                    paymentStatusColors[order.paymentStatus],
+                  ]"
+                >
+                  {{ paymentStatusLabels[order.paymentStatus] }}
+                </Badge>
+              </div>
+              <p class="text-muted-foreground">
+                Commande du {{ formatDate(order.createdAt) }}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <!-- Invoice Details -->
+        <div>
+          <div class="p-6">
+            <h2 class="text-lg font-semibold">Facture</h2>
+          </div>
+          <div class="space-y-4 p-6">
+            <!-- Invoice Info -->
+            <div class="grid gap-3 text-sm">
+              <div class="flex justify-between py-2 border-b">
+                <span class="text-muted-foreground">N° Commande</span>
+                <div class="flex items-center gap-2">
+                  <code class="bg-muted px-2 py-0.5 rounded text-xs font-mono">
+                    {{ order.orderNumber }}
+                  </code>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-6 w-6"
+                    @click="copyToClipboard(order.orderNumber)"
+                  >
+                    <Icon name="lucide:copy" class="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+              <div class="flex justify-between py-2 border-b">
+                <span class="text-muted-foreground">Date</span>
+                <span>{{ formatDate(order.createdAt) }}</span>
+              </div>
+              <div class="flex justify-between py-2 border-b">
+                <span class="text-muted-foreground">Statut paiement</span>
+                <Badge
+                  :class="[
+                    'rounded-full',
+                    paymentStatusColors[order.paymentStatus],
+                  ]"
+                >
+                  {{ paymentStatusLabels[order.paymentStatus] }}
+                </Badge>
+              </div>
+              <div
+                v-if="order.paymentMethod"
+                class="flex justify-between py-2 border-b"
+              >
+                <span class="text-muted-foreground">Méthode</span>
+                <span>{{
+                  paymentMethodLabels[order.paymentMethod] ||
+                  order.paymentMethod
+                }}</span>
+              </div>
+              <div
+                v-if="order.paidAt"
+                class="flex justify-between py-2 border-b"
+              >
+                <span class="text-muted-foreground">Payé le</span>
+                <span>{{ formatDate(order.paidAt) }}</span>
+              </div>
+            </div>
+
+            <!-- Line Items -->
+            <div class="space-y-3 mt-12">
+              <h4 class="font-medium text-md text-muted-foreground">
+                Éléments
+              </h4>
+
+              <div
+                v-for="(item, index) in invoiceItems"
+                :key="index"
+                class="flex justify-between py-2"
+              >
+                <span>{{ item.name }}</span>
+                <span class="font-medium">{{ item.price.toFixed(2) }} €</span>
+              </div>
+
+              <div
+                v-if="invoiceItems.length === 0"
+                class="py-4 text-center text-muted-foreground text-sm"
+              >
+                Aucun élément
+              </div>
+            </div>
+
+            <Separator class="my-4" />
+
+            <!-- Totals -->
+            <div class="space-y-2">
+              <div class="flex justify-between text-sm">
+                <span class="text-muted-foreground">Sous-total</span>
+                <span>
+                  {{
+                    invoiceItems.reduce((acc, i) => acc + i.price, 0).toFixed(2)
+                  }}
+                  €
+                </span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-muted-foreground">TVA (0%)</span>
+                <span>—</span>
+              </div>
+              <Separator />
+              <div class="flex justify-between text-lg font-bold pt-2">
+                <span>Total</span>
+                <span>{{ Number(order.amount).toFixed(2) }} €</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-6">
+        <!-- Customer Details -->
+        <Card class="rounded-xl">
+          <CardHeader>
+            <CardTitle class="text-base">Client</CardTitle>
+          </CardHeader>
+          <CardContent class="space-y-4">
+            <div class="flex items-center gap-3">
+              <Avatar class="h-14 w-14">
+                <AvatarFallback class="bg-muted text-foreground text-lg">
+                  {{ order.registration.firstName?.charAt(0)
+                  }}{{ order.registration.lastName?.charAt(0) }}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p class="font-semibold">
+                  {{ order.registration.firstName }}
+                  {{ order.registration.lastName }}
+                </p>
+                <p class="text-sm text-muted-foreground">
+                  {{ order.registration.email }}
+                </p>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p class="text-muted-foreground">Téléphone</p>
+                <p class="font-medium">{{ order.registration.phone || "—" }}</p>
+              </div>
+            </div>
+
+            <Button
+              class="w-full rounded-full"
+              as="a"
+              :href="`mailto:${order.registration.email}`"
+            >
+              <Icon name="lucide:mail" class="h-4 w-4" />
+              Envoyer un email
+            </Button>
+
+            <Button
+              variant="outline"
+              class="w-full rounded-full"
+              @click="
+                router.push(`/admin/inscriptions/${order.registration.id}`)
+              "
+            >
+              <Icon name="lucide:user" class="h-4 w-4" />
+              Voir l'inscription
+            </Button>
+          </CardContent>
+        </Card>
+
+        <!-- Payment Status -->
+        <Card class="gap-2">
+          <CardHeader>
+            <CardTitle class="text-base">Paiement</CardTitle>
+          </CardHeader>
+          <CardContent class="space-y-4">
+            <Select
+              :model-value="order.paymentStatus"
+              :disabled="isLoading"
+              @update:model-value="updatePaymentStatus($event as string)"
+            >
+              <SelectTrigger class="w-full rounded-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="PENDING">En attente</SelectItem>
+                <SelectItem value="PAID">Payé</SelectItem>
+                <SelectItem value="FAILED">Échoué</SelectItem>
+                <SelectItem value="REFUNDED">Remboursé</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div v-if="order.paymentStatus === 'PENDING'" class="space-y-2">
+              <p class="text-sm text-muted-foreground">
+                Marquer comme payé par :
+              </p>
+              <div class="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  class="rounded-full"
+                  :disabled="isLoading"
+                  @click="updatePaymentStatus('PAID', 'CARD')"
+                >
+                  Carte
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  class="rounded-full"
+                  :disabled="isLoading"
+                  @click="updatePaymentStatus('PAID', 'TRANSFER')"
+                >
+                  Virement
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  class="rounded-full"
+                  :disabled="isLoading"
+                  @click="updatePaymentStatus('PAID', 'CASH')"
+                >
+                  Espèces
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  class="rounded-full"
+                  :disabled="isLoading"
+                  @click="updatePaymentStatus('PAID', 'FREE')"
+                >
+                  Gratuit
+                </Button>
+              </div>
+            </div>
+
+            <Separator />
+
+            <Button
+              variant="outline"
+              size="sm"
+              class="w-full rounded-full justify-start"
+            >
+              <Icon name="lucide:printer" class="h-4 w-4" />
+              Imprimer la facture
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div v-else class="flex items-center justify-center py-24">
+    <Icon
+      name="lucide:loader-2"
+      class="h-8 w-8 animate-spin text-muted-foreground"
+    />
+  </div>
+</template>

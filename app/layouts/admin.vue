@@ -26,6 +26,7 @@ const navItems = [
   { title: "Repas", icon: "lucide:utensils", href: "/admin/repas" },
   { title: "Activités", icon: "lucide:activity", href: "/admin/activites" },
   { title: "Inscriptions", icon: "lucide:ticket", href: "/admin/inscriptions" },
+  { title: "Commandes", icon: "lucide:receipt", href: "/admin/orders" },
 ];
 
 const navItemsAdmin = [
@@ -210,11 +211,35 @@ async function handleSignOut() {
                 <Icon name="lucide:home" class="h-4 w-4" />
               </BreadcrumbLink>
             </BreadcrumbItem>
-            <template v-if="route.path !== '/admin'">
+            <template
+              v-for="(segment, index) in route.path
+                .split('/')
+                .filter((s) => s && s !== 'admin')"
+              :key="index"
+            >
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage class="capitalize">
-                  {{ route.path.split("/").pop() }}
+                <BreadcrumbLink
+                  v-if="
+                    index <
+                    route.path.split('/').filter((s) => s && s !== 'admin')
+                      .length -
+                      1
+                  "
+                  :href="`/admin/${route.path
+                    .split('/')
+                    .filter((s) => s && s !== 'admin')
+                    .slice(0, index + 1)
+                    .join('/')}`"
+                  class="capitalize"
+                >
+                  {{ segment }}
+                </BreadcrumbLink>
+                <BreadcrumbPage
+                  v-else
+                  class="capitalize truncate max-w-[200px]"
+                >
+                  {{ segment }}
                 </BreadcrumbPage>
               </BreadcrumbItem>
             </template>

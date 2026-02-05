@@ -85,6 +85,11 @@ export type Activity = Prisma.ActivityModel
  */
 export type Registration = Prisma.RegistrationModel
 /**
+ * Model Order
+ * 
+ */
+export type Order = Prisma.OrderModel
+/**
  * Model RegistrationMeal
  * 
  */

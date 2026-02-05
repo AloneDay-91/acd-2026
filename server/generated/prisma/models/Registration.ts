@@ -250,6 +250,7 @@ export type RegistrationWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   meals?: Prisma.RegistrationMealListRelationFilter
   activities?: Prisma.RegistrationActivityListRelationFilter
+  order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
 }
 
 export type RegistrationOrderByWithRelationInput = {
@@ -264,6 +265,7 @@ export type RegistrationOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   meals?: Prisma.RegistrationMealOrderByRelationAggregateInput
   activities?: Prisma.RegistrationActivityOrderByRelationAggregateInput
+  order?: Prisma.OrderOrderByWithRelationInput
 }
 
 export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
@@ -281,6 +283,7 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   meals?: Prisma.RegistrationMealListRelationFilter
   activities?: Prisma.RegistrationActivityListRelationFilter
+  order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
 }, "id">
 
 export type RegistrationOrderByWithAggregationInput = {
@@ -327,6 +330,7 @@ export type RegistrationCreateInput = {
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealCreateNestedManyWithoutRegistrationInput
   activities?: Prisma.RegistrationActivityCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateInput = {
@@ -341,6 +345,7 @@ export type RegistrationUncheckedCreateInput = {
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutRegistrationInput
   activities?: Prisma.RegistrationActivityUncheckedCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderUncheckedCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationUpdateInput = {
@@ -355,6 +360,7 @@ export type RegistrationUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUpdateManyWithoutRegistrationNestedInput
   activities?: Prisma.RegistrationActivityUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateInput = {
@@ -369,6 +375,7 @@ export type RegistrationUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUncheckedUpdateManyWithoutRegistrationNestedInput
   activities?: Prisma.RegistrationActivityUncheckedUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUncheckedUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateManyInput = {
@@ -460,6 +467,20 @@ export type EnumRegistrationStatusFieldUpdateOperationsInput = {
   set?: $Enums.RegistrationStatus
 }
 
+export type RegistrationCreateNestedOneWithoutOrderInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutOrderInput, Prisma.RegistrationUncheckedCreateWithoutOrderInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutOrderInput
+  connect?: Prisma.RegistrationWhereUniqueInput
+}
+
+export type RegistrationUpdateOneRequiredWithoutOrderNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutOrderInput, Prisma.RegistrationUncheckedCreateWithoutOrderInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutOrderInput
+  upsert?: Prisma.RegistrationUpsertWithoutOrderInput
+  connect?: Prisma.RegistrationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutOrderInput, Prisma.RegistrationUpdateWithoutOrderInput>, Prisma.RegistrationUncheckedUpdateWithoutOrderInput>
+}
+
 export type RegistrationCreateNestedOneWithoutMealsInput = {
   create?: Prisma.XOR<Prisma.RegistrationCreateWithoutMealsInput, Prisma.RegistrationUncheckedCreateWithoutMealsInput>
   connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutMealsInput
@@ -488,6 +509,78 @@ export type RegistrationUpdateOneRequiredWithoutActivitiesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutActivitiesInput, Prisma.RegistrationUpdateWithoutActivitiesInput>, Prisma.RegistrationUncheckedUpdateWithoutActivitiesInput>
 }
 
+export type RegistrationCreateWithoutOrderInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.RegistrationStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  meals?: Prisma.RegistrationMealCreateNestedManyWithoutRegistrationInput
+  activities?: Prisma.RegistrationActivityCreateNestedManyWithoutRegistrationInput
+}
+
+export type RegistrationUncheckedCreateWithoutOrderInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.RegistrationStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  meals?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutRegistrationInput
+  activities?: Prisma.RegistrationActivityUncheckedCreateNestedManyWithoutRegistrationInput
+}
+
+export type RegistrationCreateOrConnectWithoutOrderInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutOrderInput, Prisma.RegistrationUncheckedCreateWithoutOrderInput>
+}
+
+export type RegistrationUpsertWithoutOrderInput = {
+  update: Prisma.XOR<Prisma.RegistrationUpdateWithoutOrderInput, Prisma.RegistrationUncheckedUpdateWithoutOrderInput>
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutOrderInput, Prisma.RegistrationUncheckedCreateWithoutOrderInput>
+  where?: Prisma.RegistrationWhereInput
+}
+
+export type RegistrationUpdateToOneWithWhereWithoutOrderInput = {
+  where?: Prisma.RegistrationWhereInput
+  data: Prisma.XOR<Prisma.RegistrationUpdateWithoutOrderInput, Prisma.RegistrationUncheckedUpdateWithoutOrderInput>
+}
+
+export type RegistrationUpdateWithoutOrderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  meals?: Prisma.RegistrationMealUpdateManyWithoutRegistrationNestedInput
+  activities?: Prisma.RegistrationActivityUpdateManyWithoutRegistrationNestedInput
+}
+
+export type RegistrationUncheckedUpdateWithoutOrderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  meals?: Prisma.RegistrationMealUncheckedUpdateManyWithoutRegistrationNestedInput
+  activities?: Prisma.RegistrationActivityUncheckedUpdateManyWithoutRegistrationNestedInput
+}
+
 export type RegistrationCreateWithoutMealsInput = {
   id?: string
   firstName: string
@@ -499,6 +592,7 @@ export type RegistrationCreateWithoutMealsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.RegistrationActivityCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutMealsInput = {
@@ -512,6 +606,7 @@ export type RegistrationUncheckedCreateWithoutMealsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.RegistrationActivityUncheckedCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderUncheckedCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutMealsInput = {
@@ -541,6 +636,7 @@ export type RegistrationUpdateWithoutMealsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.RegistrationActivityUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutMealsInput = {
@@ -554,6 +650,7 @@ export type RegistrationUncheckedUpdateWithoutMealsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.RegistrationActivityUncheckedUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUncheckedUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateWithoutActivitiesInput = {
@@ -567,6 +664,7 @@ export type RegistrationCreateWithoutActivitiesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutActivitiesInput = {
@@ -580,6 +678,7 @@ export type RegistrationUncheckedCreateWithoutActivitiesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderUncheckedCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutActivitiesInput = {
@@ -609,6 +708,7 @@ export type RegistrationUpdateWithoutActivitiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutActivitiesInput = {
@@ -622,6 +722,7 @@ export type RegistrationUncheckedUpdateWithoutActivitiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUncheckedUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUncheckedUpdateOneWithoutRegistrationNestedInput
 }
 
 
@@ -676,6 +777,7 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   updatedAt?: boolean
   meals?: boolean | Prisma.Registration$mealsArgs<ExtArgs>
   activities?: boolean | Prisma.Registration$activitiesArgs<ExtArgs>
+  order?: boolean | Prisma.Registration$orderArgs<ExtArgs>
   _count?: boolean | Prisma.RegistrationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["registration"]>
 
@@ -719,6 +821,7 @@ export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   meals?: boolean | Prisma.Registration$mealsArgs<ExtArgs>
   activities?: boolean | Prisma.Registration$activitiesArgs<ExtArgs>
+  order?: boolean | Prisma.Registration$orderArgs<ExtArgs>
   _count?: boolean | Prisma.RegistrationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RegistrationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -729,6 +832,7 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     meals: Prisma.$RegistrationMealPayload<ExtArgs>[]
     activities: Prisma.$RegistrationActivityPayload<ExtArgs>[]
+    order: Prisma.$OrderPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1136,6 +1240,7 @@ export interface Prisma__RegistrationClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   meals<T extends Prisma.Registration$mealsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$mealsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationMealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   activities<T extends Prisma.Registration$activitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  order<T extends Prisma.Registration$orderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$orderArgs<ExtArgs>>): Prisma.Prisma__OrderClient<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1607,6 +1712,25 @@ export type Registration$activitiesArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.RegistrationActivityScalarFieldEnum | Prisma.RegistrationActivityScalarFieldEnum[]
+}
+
+/**
+ * Registration.order
+ */
+export type Registration$orderArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Order
+   */
+  select?: Prisma.OrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Order
+   */
+  omit?: Prisma.OrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderInclude<ExtArgs> | null
+  where?: Prisma.OrderWhereInput
 }
 
 /**

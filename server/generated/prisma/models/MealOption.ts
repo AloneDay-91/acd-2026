@@ -29,6 +29,7 @@ export type MealOptionMinAggregateOutputType = {
   mealId: string | null
   name: string | null
   optionType: $Enums.OptionType | null
+  hasAllergens: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -38,6 +39,7 @@ export type MealOptionMaxAggregateOutputType = {
   mealId: string | null
   name: string | null
   optionType: $Enums.OptionType | null
+  hasAllergens: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,6 +49,8 @@ export type MealOptionCountAggregateOutputType = {
   mealId: number
   name: number
   optionType: number
+  hasAllergens: number
+  allergens: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -58,6 +62,7 @@ export type MealOptionMinAggregateInputType = {
   mealId?: true
   name?: true
   optionType?: true
+  hasAllergens?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -67,6 +72,7 @@ export type MealOptionMaxAggregateInputType = {
   mealId?: true
   name?: true
   optionType?: true
+  hasAllergens?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -76,6 +82,8 @@ export type MealOptionCountAggregateInputType = {
   mealId?: true
   name?: true
   optionType?: true
+  hasAllergens?: true
+  allergens?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -158,6 +166,8 @@ export type MealOptionGroupByOutputType = {
   mealId: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens: boolean
+  allergens: string[]
   createdAt: Date
   updatedAt: Date
   _count: MealOptionCountAggregateOutputType | null
@@ -188,6 +198,8 @@ export type MealOptionWhereInput = {
   mealId?: Prisma.StringFilter<"MealOption"> | string
   name?: Prisma.StringFilter<"MealOption"> | string
   optionType?: Prisma.EnumOptionTypeFilter<"MealOption"> | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFilter<"MealOption"> | boolean
+  allergens?: Prisma.StringNullableListFilter<"MealOption">
   createdAt?: Prisma.DateTimeFilter<"MealOption"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MealOption"> | Date | string
   meal?: Prisma.XOR<Prisma.MealScalarRelationFilter, Prisma.MealWhereInput>
@@ -201,6 +213,8 @@ export type MealOptionOrderByWithRelationInput = {
   mealId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   optionType?: Prisma.SortOrder
+  hasAllergens?: Prisma.SortOrder
+  allergens?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   meal?: Prisma.MealOrderByWithRelationInput
@@ -217,6 +231,8 @@ export type MealOptionWhereUniqueInput = Prisma.AtLeast<{
   mealId?: Prisma.StringFilter<"MealOption"> | string
   name?: Prisma.StringFilter<"MealOption"> | string
   optionType?: Prisma.EnumOptionTypeFilter<"MealOption"> | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFilter<"MealOption"> | boolean
+  allergens?: Prisma.StringNullableListFilter<"MealOption">
   createdAt?: Prisma.DateTimeFilter<"MealOption"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MealOption"> | Date | string
   meal?: Prisma.XOR<Prisma.MealScalarRelationFilter, Prisma.MealWhereInput>
@@ -230,6 +246,8 @@ export type MealOptionOrderByWithAggregationInput = {
   mealId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   optionType?: Prisma.SortOrder
+  hasAllergens?: Prisma.SortOrder
+  allergens?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.MealOptionCountOrderByAggregateInput
@@ -245,6 +263,8 @@ export type MealOptionScalarWhereWithAggregatesInput = {
   mealId?: Prisma.StringWithAggregatesFilter<"MealOption"> | string
   name?: Prisma.StringWithAggregatesFilter<"MealOption"> | string
   optionType?: Prisma.EnumOptionTypeWithAggregatesFilter<"MealOption"> | $Enums.OptionType
+  hasAllergens?: Prisma.BoolWithAggregatesFilter<"MealOption"> | boolean
+  allergens?: Prisma.StringNullableListFilter<"MealOption">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"MealOption"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"MealOption"> | Date | string
 }
@@ -253,6 +273,8 @@ export type MealOptionCreateInput = {
   id?: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   meal: Prisma.MealCreateNestedOneWithoutOptionsInput
@@ -266,6 +288,8 @@ export type MealOptionUncheckedCreateInput = {
   mealId: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutStarterOptionInput
@@ -277,6 +301,8 @@ export type MealOptionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meal?: Prisma.MealUpdateOneRequiredWithoutOptionsNestedInput
@@ -290,6 +316,8 @@ export type MealOptionUncheckedUpdateInput = {
   mealId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutStarterOptionNestedInput
@@ -302,6 +330,8 @@ export type MealOptionCreateManyInput = {
   mealId: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -310,6 +340,8 @@ export type MealOptionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -319,6 +351,8 @@ export type MealOptionUncheckedUpdateManyInput = {
   mealId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -333,11 +367,21 @@ export type MealOptionOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type StringNullableListFilter<$PrismaModel = never> = {
+  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
+  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
+  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
 export type MealOptionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   mealId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   optionType?: Prisma.SortOrder
+  hasAllergens?: Prisma.SortOrder
+  allergens?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -347,6 +391,7 @@ export type MealOptionMaxOrderByAggregateInput = {
   mealId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   optionType?: Prisma.SortOrder
+  hasAllergens?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -356,6 +401,7 @@ export type MealOptionMinOrderByAggregateInput = {
   mealId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   optionType?: Prisma.SortOrder
+  hasAllergens?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -407,8 +453,17 @@ export type MealOptionUncheckedUpdateManyWithoutMealNestedInput = {
   deleteMany?: Prisma.MealOptionScalarWhereInput | Prisma.MealOptionScalarWhereInput[]
 }
 
+export type MealOptionCreateallergensInput = {
+  set: string[]
+}
+
 export type EnumOptionTypeFieldUpdateOperationsInput = {
   set?: $Enums.OptionType
+}
+
+export type MealOptionUpdateallergensInput = {
+  set?: string[]
+  push?: string | string[]
 }
 
 export type MealOptionCreateNestedOneWithoutStarterChoicesInput = {
@@ -463,6 +518,8 @@ export type MealOptionCreateWithoutMealInput = {
   id?: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   starterChoices?: Prisma.RegistrationMealCreateNestedManyWithoutStarterOptionInput
@@ -474,6 +531,8 @@ export type MealOptionUncheckedCreateWithoutMealInput = {
   id?: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutStarterOptionInput
@@ -515,6 +574,8 @@ export type MealOptionScalarWhereInput = {
   mealId?: Prisma.StringFilter<"MealOption"> | string
   name?: Prisma.StringFilter<"MealOption"> | string
   optionType?: Prisma.EnumOptionTypeFilter<"MealOption"> | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFilter<"MealOption"> | boolean
+  allergens?: Prisma.StringNullableListFilter<"MealOption">
   createdAt?: Prisma.DateTimeFilter<"MealOption"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MealOption"> | Date | string
 }
@@ -523,6 +584,8 @@ export type MealOptionCreateWithoutStarterChoicesInput = {
   id?: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   meal: Prisma.MealCreateNestedOneWithoutOptionsInput
@@ -535,6 +598,8 @@ export type MealOptionUncheckedCreateWithoutStarterChoicesInput = {
   mealId: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   mainChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutMainOptionInput
@@ -550,6 +615,8 @@ export type MealOptionCreateWithoutMainChoicesInput = {
   id?: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   meal: Prisma.MealCreateNestedOneWithoutOptionsInput
@@ -562,6 +629,8 @@ export type MealOptionUncheckedCreateWithoutMainChoicesInput = {
   mealId: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutStarterOptionInput
@@ -577,6 +646,8 @@ export type MealOptionCreateWithoutDessertChoicesInput = {
   id?: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   meal: Prisma.MealCreateNestedOneWithoutOptionsInput
@@ -589,6 +660,8 @@ export type MealOptionUncheckedCreateWithoutDessertChoicesInput = {
   mealId: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutStarterOptionInput
@@ -615,6 +688,8 @@ export type MealOptionUpdateWithoutStarterChoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meal?: Prisma.MealUpdateOneRequiredWithoutOptionsNestedInput
@@ -627,6 +702,8 @@ export type MealOptionUncheckedUpdateWithoutStarterChoicesInput = {
   mealId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mainChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutMainOptionNestedInput
@@ -648,6 +725,8 @@ export type MealOptionUpdateWithoutMainChoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meal?: Prisma.MealUpdateOneRequiredWithoutOptionsNestedInput
@@ -660,6 +739,8 @@ export type MealOptionUncheckedUpdateWithoutMainChoicesInput = {
   mealId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutStarterOptionNestedInput
@@ -681,6 +762,8 @@ export type MealOptionUpdateWithoutDessertChoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meal?: Prisma.MealUpdateOneRequiredWithoutOptionsNestedInput
@@ -693,6 +776,8 @@ export type MealOptionUncheckedUpdateWithoutDessertChoicesInput = {
   mealId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutStarterOptionNestedInput
@@ -703,6 +788,8 @@ export type MealOptionCreateManyMealInput = {
   id?: string
   name: string
   optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -711,6 +798,8 @@ export type MealOptionUpdateWithoutMealInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   starterChoices?: Prisma.RegistrationMealUpdateManyWithoutStarterOptionNestedInput
@@ -722,6 +811,8 @@ export type MealOptionUncheckedUpdateWithoutMealInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutStarterOptionNestedInput
@@ -733,6 +824,8 @@ export type MealOptionUncheckedUpdateManyWithoutMealInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -791,6 +884,8 @@ export type MealOptionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   mealId?: boolean
   name?: boolean
   optionType?: boolean
+  hasAllergens?: boolean
+  allergens?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   meal?: boolean | Prisma.MealDefaultArgs<ExtArgs>
@@ -805,6 +900,8 @@ export type MealOptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   mealId?: boolean
   name?: boolean
   optionType?: boolean
+  hasAllergens?: boolean
+  allergens?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   meal?: boolean | Prisma.MealDefaultArgs<ExtArgs>
@@ -815,6 +912,8 @@ export type MealOptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   mealId?: boolean
   name?: boolean
   optionType?: boolean
+  hasAllergens?: boolean
+  allergens?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   meal?: boolean | Prisma.MealDefaultArgs<ExtArgs>
@@ -825,11 +924,13 @@ export type MealOptionSelectScalar = {
   mealId?: boolean
   name?: boolean
   optionType?: boolean
+  hasAllergens?: boolean
+  allergens?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MealOptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "mealId" | "name" | "optionType" | "createdAt" | "updatedAt", ExtArgs["result"]["mealOption"]>
+export type MealOptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "mealId" | "name" | "optionType" | "hasAllergens" | "allergens" | "createdAt" | "updatedAt", ExtArgs["result"]["mealOption"]>
 export type MealOptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   meal?: boolean | Prisma.MealDefaultArgs<ExtArgs>
   starterChoices?: boolean | Prisma.MealOption$starterChoicesArgs<ExtArgs>
@@ -857,6 +958,8 @@ export type $MealOptionPayload<ExtArgs extends runtime.Types.Extensions.Internal
     mealId: string
     name: string
     optionType: $Enums.OptionType
+    hasAllergens: boolean
+    allergens: string[]
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["mealOption"]>
@@ -1290,6 +1393,8 @@ export interface MealOptionFieldRefs {
   readonly mealId: Prisma.FieldRef<"MealOption", 'String'>
   readonly name: Prisma.FieldRef<"MealOption", 'String'>
   readonly optionType: Prisma.FieldRef<"MealOption", 'OptionType'>
+  readonly hasAllergens: Prisma.FieldRef<"MealOption", 'Boolean'>
+  readonly allergens: Prisma.FieldRef<"MealOption", 'String[]'>
   readonly createdAt: Prisma.FieldRef<"MealOption", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"MealOption", 'DateTime'>
 }
