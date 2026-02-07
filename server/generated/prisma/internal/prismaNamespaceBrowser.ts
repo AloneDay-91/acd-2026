@@ -60,9 +60,12 @@ export const ModelName = {
   MealOption: 'MealOption',
   Activity: 'Activity',
   Registration: 'Registration',
+  Order: 'Order',
   RegistrationMeal: 'RegistrationMeal',
   RegistrationActivity: 'RegistrationActivity',
-  Setting: 'Setting'
+  Setting: 'Setting',
+  Hotel: 'Hotel',
+  Iut: 'Iut'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -108,7 +111,8 @@ export const SessionScalarFieldEnum = {
   updatedAt: 'updatedAt',
   ipAddress: 'ipAddress',
   userAgent: 'userAgent',
-  userId: 'userId'
+  userId: 'userId',
+  impersonatedBy: 'impersonatedBy'
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
@@ -117,11 +121,19 @@ export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeo
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  firstName: 'firstName',
+  lastName: 'lastName',
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
+  tel: 'tel',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  role: 'role',
+  banned: 'banned',
+  banReason: 'banReason',
+  banExpires: 'banExpires',
+  iut: 'iut'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -172,6 +184,8 @@ export const MealOptionScalarFieldEnum = {
   mealId: 'mealId',
   name: 'name',
   optionType: 'optionType',
+  hasAllergens: 'hasAllergens',
+  allergens: 'allergens',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -201,6 +215,9 @@ export const RegistrationScalarFieldEnum = {
   lastName: 'lastName',
   email: 'email',
   phone: 'phone',
+  iutId: 'iutId',
+  allergens: 'allergens',
+  isMotorized: 'isMotorized',
   totalPrice: 'totalPrice',
   status: 'status',
   createdAt: 'createdAt',
@@ -208,6 +225,22 @@ export const RegistrationScalarFieldEnum = {
 } as const
 
 export type RegistrationScalarFieldEnum = (typeof RegistrationScalarFieldEnum)[keyof typeof RegistrationScalarFieldEnum]
+
+
+export const OrderScalarFieldEnum = {
+  id: 'id',
+  orderNumber: 'orderNumber',
+  registrationId: 'registrationId',
+  amount: 'amount',
+  paymentStatus: 'paymentStatus',
+  paymentMethod: 'paymentMethod',
+  notes: 'notes',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
 export const RegistrationMealScalarFieldEnum = {
@@ -245,6 +278,37 @@ export const SettingScalarFieldEnum = {
 } as const
 
 export type SettingScalarFieldEnum = (typeof SettingScalarFieldEnum)[keyof typeof SettingScalarFieldEnum]
+
+
+export const HotelScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  address: 'address',
+  postalCode: 'postalCode',
+  city: 'city',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  googleMapsUrl: 'googleMapsUrl',
+  websiteUrl: 'websiteUrl',
+  phone: 'phone',
+  email: 'email',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelScalarFieldEnum = (typeof HotelScalarFieldEnum)[keyof typeof HotelScalarFieldEnum]
+
+
+export const IutScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  city: 'city',
+  code: 'code',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IutScalarFieldEnum = (typeof IutScalarFieldEnum)[keyof typeof IutScalarFieldEnum]
 
 
 export const SortOrder = {

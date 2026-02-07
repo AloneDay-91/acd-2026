@@ -63,6 +63,11 @@ export type Activity = Prisma.ActivityModel
  */
 export type Registration = Prisma.RegistrationModel
 /**
+ * Model Order
+ * 
+ */
+export type Order = Prisma.OrderModel
+/**
  * Model RegistrationMeal
  * 
  */
@@ -77,3 +82,13 @@ export type RegistrationActivity = Prisma.RegistrationActivityModel
  * 
  */
 export type Setting = Prisma.SettingModel
+/**
+ * Model Hotel
+ * 
+ */
+export type Hotel = Prisma.HotelModel
+/**
+ * Model Iut
+ * 
+ */
+export type Iut = Prisma.IutModel

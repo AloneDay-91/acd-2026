@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSession, signOut } from "~/lib/auth-client";
+import { useSession } from "~/lib/auth-client";
 import {
   Sidebar,
   SidebarContent,
@@ -26,13 +26,13 @@ const navItems = [
   { title: "Repas", icon: "lucide:utensils", href: "/admin/repas" },
   { title: "Activités", icon: "lucide:activity", href: "/admin/activites" },
   { title: "Inscriptions", icon: "lucide:ticket", href: "/admin/inscriptions" },
+  { title: "Paiements", icon: "lucide:receipt", href: "/admin/orders" },
+  { title: "Hôtels", icon: "lucide:hotel", href: "/admin/hotels" },
 ];
 
 const navItemsAdmin = [
-  { title: "Utilisateurs", icon: "lucide:users", href: "/admin/utilisateurs" },
-  { title: "Rôles", icon: "lucide:shield", href: "/admin/roles" },
-  { title: "Logs", icon: "lucide:file-text", href: "/admin/logs" },
-  { title: "Emails", icon: "lucide:mail", href: "/admin/emails" },
+  { title: "Utilisateurs", icon: "lucide:users", href: "/admin/users" },
+  { title: "Liste IUT", icon: "lucide:building-2", href: "/admin/iuts" },
   { title: "Export", icon: "lucide:download", href: "/admin/export" },
 ];
 
@@ -43,11 +43,6 @@ const bottomNavItems = [
 function isActive(href: string) {
   if (href === "/admin") return route.path === "/admin";
   return route.path === href || route.path.startsWith(href + "/");
-}
-
-async function handleSignOut() {
-  await signOut();
-  navigateTo("/");
 }
 </script>
 
@@ -177,21 +172,23 @@ async function handleSignOut() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem as-child>
-                  <NuxtLink to="/" class="cursor-pointer">
-                    <Icon name="lucide:arrow-left" class="mr-2 h-4 w-4" />
-                    Retour au site
+                  <NuxtLink to="/compte" class="cursor-pointer">
+                    <Icon name="lucide:user" class="h-4 w-4" />
+                    Voir mon compte
                   </NuxtLink>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  class="text-destructive cursor-pointer"
-                  @click="handleSignOut"
-                >
-                  <Icon name="lucide:log-out" class="mr-2 h-4 w-4" />
-                  Déconnexion
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <SidebarMenuButton
+              as-child
+              tooltip="Retour au site"
+              class="text-xs w-full text-center flex items-center justify-center"
+            >
+              <NuxtLink to="/">
+                <Icon name="lucide:arrow-left" class="h-4 w-4" />
+                <span>Retour à l'accueil</span>
+              </NuxtLink>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
@@ -210,11 +207,35 @@ async function handleSignOut() {
                 <Icon name="lucide:home" class="h-4 w-4" />
               </BreadcrumbLink>
             </BreadcrumbItem>
-            <template v-if="route.path !== '/admin'">
+            <template
+              v-for="(segment, index) in route.path
+                .split('/')
+                .filter((s) => s && s !== 'admin')"
+              :key="index"
+            >
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage class="capitalize">
-                  {{ route.path.split("/").pop() }}
+                <BreadcrumbLink
+                  v-if="
+                    index <
+                    route.path.split('/').filter((s) => s && s !== 'admin')
+                      .length -
+                      1
+                  "
+                  :href="`/admin/${route.path
+                    .split('/')
+                    .filter((s) => s && s !== 'admin')
+                    .slice(0, index + 1)
+                    .join('/')}`"
+                  class="capitalize"
+                >
+                  {{ segment }}
+                </BreadcrumbLink>
+                <BreadcrumbPage
+                  v-else
+                  class="capitalize truncate max-w-[200px]"
+                >
+                  {{ segment }}
                 </BreadcrumbPage>
               </BreadcrumbItem>
             </template>

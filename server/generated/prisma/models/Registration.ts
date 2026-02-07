@@ -40,6 +40,9 @@ export type RegistrationMinAggregateOutputType = {
   lastName: string | null
   email: string | null
   phone: string | null
+  iutId: string | null
+  allergens: string | null
+  isMotorized: boolean | null
   totalPrice: runtime.Decimal | null
   status: $Enums.RegistrationStatus | null
   createdAt: Date | null
@@ -52,6 +55,9 @@ export type RegistrationMaxAggregateOutputType = {
   lastName: string | null
   email: string | null
   phone: string | null
+  iutId: string | null
+  allergens: string | null
+  isMotorized: boolean | null
   totalPrice: runtime.Decimal | null
   status: $Enums.RegistrationStatus | null
   createdAt: Date | null
@@ -64,6 +70,9 @@ export type RegistrationCountAggregateOutputType = {
   lastName: number
   email: number
   phone: number
+  iutId: number
+  allergens: number
+  isMotorized: number
   totalPrice: number
   status: number
   createdAt: number
@@ -86,6 +95,9 @@ export type RegistrationMinAggregateInputType = {
   lastName?: true
   email?: true
   phone?: true
+  iutId?: true
+  allergens?: true
+  isMotorized?: true
   totalPrice?: true
   status?: true
   createdAt?: true
@@ -98,6 +110,9 @@ export type RegistrationMaxAggregateInputType = {
   lastName?: true
   email?: true
   phone?: true
+  iutId?: true
+  allergens?: true
+  isMotorized?: true
   totalPrice?: true
   status?: true
   createdAt?: true
@@ -110,6 +125,9 @@ export type RegistrationCountAggregateInputType = {
   lastName?: true
   email?: true
   phone?: true
+  iutId?: true
+  allergens?: true
+  isMotorized?: true
   totalPrice?: true
   status?: true
   createdAt?: true
@@ -209,6 +227,9 @@ export type RegistrationGroupByOutputType = {
   lastName: string
   email: string
   phone: string
+  iutId: string | null
+  allergens: string | null
+  isMotorized: boolean
   totalPrice: runtime.Decimal
   status: $Enums.RegistrationStatus
   createdAt: Date
@@ -244,12 +265,16 @@ export type RegistrationWhereInput = {
   lastName?: Prisma.StringFilter<"Registration"> | string
   email?: Prisma.StringFilter<"Registration"> | string
   phone?: Prisma.StringFilter<"Registration"> | string
+  iutId?: Prisma.StringNullableFilter<"Registration"> | string | null
+  allergens?: Prisma.StringNullableFilter<"Registration"> | string | null
+  isMotorized?: Prisma.BoolFilter<"Registration"> | boolean
   totalPrice?: Prisma.DecimalFilter<"Registration"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
   createdAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   meals?: Prisma.RegistrationMealListRelationFilter
   activities?: Prisma.RegistrationActivityListRelationFilter
+  order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
 }
 
 export type RegistrationOrderByWithRelationInput = {
@@ -258,12 +283,16 @@ export type RegistrationOrderByWithRelationInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  iutId?: Prisma.SortOrderInput | Prisma.SortOrder
+  allergens?: Prisma.SortOrderInput | Prisma.SortOrder
+  isMotorized?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   meals?: Prisma.RegistrationMealOrderByRelationAggregateInput
   activities?: Prisma.RegistrationActivityOrderByRelationAggregateInput
+  order?: Prisma.OrderOrderByWithRelationInput
 }
 
 export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
@@ -275,12 +304,16 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   lastName?: Prisma.StringFilter<"Registration"> | string
   email?: Prisma.StringFilter<"Registration"> | string
   phone?: Prisma.StringFilter<"Registration"> | string
+  iutId?: Prisma.StringNullableFilter<"Registration"> | string | null
+  allergens?: Prisma.StringNullableFilter<"Registration"> | string | null
+  isMotorized?: Prisma.BoolFilter<"Registration"> | boolean
   totalPrice?: Prisma.DecimalFilter<"Registration"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
   createdAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   meals?: Prisma.RegistrationMealListRelationFilter
   activities?: Prisma.RegistrationActivityListRelationFilter
+  order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
 }, "id">
 
 export type RegistrationOrderByWithAggregationInput = {
@@ -289,6 +322,9 @@ export type RegistrationOrderByWithAggregationInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  iutId?: Prisma.SortOrderInput | Prisma.SortOrder
+  allergens?: Prisma.SortOrderInput | Prisma.SortOrder
+  isMotorized?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -309,6 +345,9 @@ export type RegistrationScalarWhereWithAggregatesInput = {
   lastName?: Prisma.StringWithAggregatesFilter<"Registration"> | string
   email?: Prisma.StringWithAggregatesFilter<"Registration"> | string
   phone?: Prisma.StringWithAggregatesFilter<"Registration"> | string
+  iutId?: Prisma.StringNullableWithAggregatesFilter<"Registration"> | string | null
+  allergens?: Prisma.StringNullableWithAggregatesFilter<"Registration"> | string | null
+  isMotorized?: Prisma.BoolWithAggregatesFilter<"Registration"> | boolean
   totalPrice?: Prisma.DecimalWithAggregatesFilter<"Registration"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusWithAggregatesFilter<"Registration"> | $Enums.RegistrationStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Registration"> | Date | string
@@ -321,12 +360,16 @@ export type RegistrationCreateInput = {
   lastName: string
   email: string
   phone: string
+  iutId?: string | null
+  allergens?: string | null
+  isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealCreateNestedManyWithoutRegistrationInput
   activities?: Prisma.RegistrationActivityCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateInput = {
@@ -335,12 +378,16 @@ export type RegistrationUncheckedCreateInput = {
   lastName: string
   email: string
   phone: string
+  iutId?: string | null
+  allergens?: string | null
+  isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutRegistrationInput
   activities?: Prisma.RegistrationActivityUncheckedCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderUncheckedCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationUpdateInput = {
@@ -349,12 +396,16 @@ export type RegistrationUpdateInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUpdateManyWithoutRegistrationNestedInput
   activities?: Prisma.RegistrationActivityUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateInput = {
@@ -363,12 +414,16 @@ export type RegistrationUncheckedUpdateInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUncheckedUpdateManyWithoutRegistrationNestedInput
   activities?: Prisma.RegistrationActivityUncheckedUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUncheckedUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateManyInput = {
@@ -377,6 +432,9 @@ export type RegistrationCreateManyInput = {
   lastName: string
   email: string
   phone: string
+  iutId?: string | null
+  allergens?: string | null
+  isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   createdAt?: Date | string
@@ -389,6 +447,9 @@ export type RegistrationUpdateManyMutationInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -401,6 +462,9 @@ export type RegistrationUncheckedUpdateManyInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -413,6 +477,9 @@ export type RegistrationCountOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  iutId?: Prisma.SortOrder
+  allergens?: Prisma.SortOrder
+  isMotorized?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -429,6 +496,9 @@ export type RegistrationMaxOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  iutId?: Prisma.SortOrder
+  allergens?: Prisma.SortOrder
+  isMotorized?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -441,6 +511,9 @@ export type RegistrationMinOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  iutId?: Prisma.SortOrder
+  allergens?: Prisma.SortOrder
+  isMotorized?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -458,6 +531,20 @@ export type RegistrationScalarRelationFilter = {
 
 export type EnumRegistrationStatusFieldUpdateOperationsInput = {
   set?: $Enums.RegistrationStatus
+}
+
+export type RegistrationCreateNestedOneWithoutOrderInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutOrderInput, Prisma.RegistrationUncheckedCreateWithoutOrderInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutOrderInput
+  connect?: Prisma.RegistrationWhereUniqueInput
+}
+
+export type RegistrationUpdateOneRequiredWithoutOrderNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutOrderInput, Prisma.RegistrationUncheckedCreateWithoutOrderInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutOrderInput
+  upsert?: Prisma.RegistrationUpsertWithoutOrderInput
+  connect?: Prisma.RegistrationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutOrderInput, Prisma.RegistrationUpdateWithoutOrderInput>, Prisma.RegistrationUncheckedUpdateWithoutOrderInput>
 }
 
 export type RegistrationCreateNestedOneWithoutMealsInput = {
@@ -488,17 +575,105 @@ export type RegistrationUpdateOneRequiredWithoutActivitiesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutActivitiesInput, Prisma.RegistrationUpdateWithoutActivitiesInput>, Prisma.RegistrationUncheckedUpdateWithoutActivitiesInput>
 }
 
+export type RegistrationCreateWithoutOrderInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  iutId?: string | null
+  allergens?: string | null
+  isMotorized?: boolean
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.RegistrationStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  meals?: Prisma.RegistrationMealCreateNestedManyWithoutRegistrationInput
+  activities?: Prisma.RegistrationActivityCreateNestedManyWithoutRegistrationInput
+}
+
+export type RegistrationUncheckedCreateWithoutOrderInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  iutId?: string | null
+  allergens?: string | null
+  isMotorized?: boolean
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.RegistrationStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  meals?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutRegistrationInput
+  activities?: Prisma.RegistrationActivityUncheckedCreateNestedManyWithoutRegistrationInput
+}
+
+export type RegistrationCreateOrConnectWithoutOrderInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutOrderInput, Prisma.RegistrationUncheckedCreateWithoutOrderInput>
+}
+
+export type RegistrationUpsertWithoutOrderInput = {
+  update: Prisma.XOR<Prisma.RegistrationUpdateWithoutOrderInput, Prisma.RegistrationUncheckedUpdateWithoutOrderInput>
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutOrderInput, Prisma.RegistrationUncheckedCreateWithoutOrderInput>
+  where?: Prisma.RegistrationWhereInput
+}
+
+export type RegistrationUpdateToOneWithWhereWithoutOrderInput = {
+  where?: Prisma.RegistrationWhereInput
+  data: Prisma.XOR<Prisma.RegistrationUpdateWithoutOrderInput, Prisma.RegistrationUncheckedUpdateWithoutOrderInput>
+}
+
+export type RegistrationUpdateWithoutOrderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  meals?: Prisma.RegistrationMealUpdateManyWithoutRegistrationNestedInput
+  activities?: Prisma.RegistrationActivityUpdateManyWithoutRegistrationNestedInput
+}
+
+export type RegistrationUncheckedUpdateWithoutOrderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  meals?: Prisma.RegistrationMealUncheckedUpdateManyWithoutRegistrationNestedInput
+  activities?: Prisma.RegistrationActivityUncheckedUpdateManyWithoutRegistrationNestedInput
+}
+
 export type RegistrationCreateWithoutMealsInput = {
   id?: string
   firstName: string
   lastName: string
   email: string
   phone: string
+  iutId?: string | null
+  allergens?: string | null
+  isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.RegistrationActivityCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutMealsInput = {
@@ -507,11 +682,15 @@ export type RegistrationUncheckedCreateWithoutMealsInput = {
   lastName: string
   email: string
   phone: string
+  iutId?: string | null
+  allergens?: string | null
+  isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.RegistrationActivityUncheckedCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderUncheckedCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutMealsInput = {
@@ -536,11 +715,15 @@ export type RegistrationUpdateWithoutMealsInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.RegistrationActivityUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutMealsInput = {
@@ -549,11 +732,15 @@ export type RegistrationUncheckedUpdateWithoutMealsInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.RegistrationActivityUncheckedUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUncheckedUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateWithoutActivitiesInput = {
@@ -562,11 +749,15 @@ export type RegistrationCreateWithoutActivitiesInput = {
   lastName: string
   email: string
   phone: string
+  iutId?: string | null
+  allergens?: string | null
+  isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutActivitiesInput = {
@@ -575,11 +766,15 @@ export type RegistrationUncheckedCreateWithoutActivitiesInput = {
   lastName: string
   email: string
   phone: string
+  iutId?: string | null
+  allergens?: string | null
+  isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutRegistrationInput
+  order?: Prisma.OrderUncheckedCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutActivitiesInput = {
@@ -604,11 +799,15 @@ export type RegistrationUpdateWithoutActivitiesInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutActivitiesInput = {
@@ -617,11 +816,15 @@ export type RegistrationUncheckedUpdateWithoutActivitiesInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUncheckedUpdateManyWithoutRegistrationNestedInput
+  order?: Prisma.OrderUncheckedUpdateOneWithoutRegistrationNestedInput
 }
 
 
@@ -670,12 +873,16 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   lastName?: boolean
   email?: boolean
   phone?: boolean
+  iutId?: boolean
+  allergens?: boolean
+  isMotorized?: boolean
   totalPrice?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   meals?: boolean | Prisma.Registration$mealsArgs<ExtArgs>
   activities?: boolean | Prisma.Registration$activitiesArgs<ExtArgs>
+  order?: boolean | Prisma.Registration$orderArgs<ExtArgs>
   _count?: boolean | Prisma.RegistrationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["registration"]>
 
@@ -685,6 +892,9 @@ export type RegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   lastName?: boolean
   email?: boolean
   phone?: boolean
+  iutId?: boolean
+  allergens?: boolean
+  isMotorized?: boolean
   totalPrice?: boolean
   status?: boolean
   createdAt?: boolean
@@ -697,6 +907,9 @@ export type RegistrationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   lastName?: boolean
   email?: boolean
   phone?: boolean
+  iutId?: boolean
+  allergens?: boolean
+  isMotorized?: boolean
   totalPrice?: boolean
   status?: boolean
   createdAt?: boolean
@@ -709,16 +922,20 @@ export type RegistrationSelectScalar = {
   lastName?: boolean
   email?: boolean
   phone?: boolean
+  iutId?: boolean
+  allergens?: boolean
+  isMotorized?: boolean
   totalPrice?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "totalPrice" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["registration"]>
+export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "iutId" | "allergens" | "isMotorized" | "totalPrice" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["registration"]>
 export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   meals?: boolean | Prisma.Registration$mealsArgs<ExtArgs>
   activities?: boolean | Prisma.Registration$activitiesArgs<ExtArgs>
+  order?: boolean | Prisma.Registration$orderArgs<ExtArgs>
   _count?: boolean | Prisma.RegistrationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RegistrationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -729,6 +946,7 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     meals: Prisma.$RegistrationMealPayload<ExtArgs>[]
     activities: Prisma.$RegistrationActivityPayload<ExtArgs>[]
+    order: Prisma.$OrderPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -736,6 +954,9 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     lastName: string
     email: string
     phone: string
+    iutId: string | null
+    allergens: string | null
+    isMotorized: boolean
     totalPrice: runtime.Decimal
     status: $Enums.RegistrationStatus
     createdAt: Date
@@ -1136,6 +1357,7 @@ export interface Prisma__RegistrationClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   meals<T extends Prisma.Registration$mealsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$mealsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationMealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   activities<T extends Prisma.Registration$activitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  order<T extends Prisma.Registration$orderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$orderArgs<ExtArgs>>): Prisma.Prisma__OrderClient<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1170,6 +1392,9 @@ export interface RegistrationFieldRefs {
   readonly lastName: Prisma.FieldRef<"Registration", 'String'>
   readonly email: Prisma.FieldRef<"Registration", 'String'>
   readonly phone: Prisma.FieldRef<"Registration", 'String'>
+  readonly iutId: Prisma.FieldRef<"Registration", 'String'>
+  readonly allergens: Prisma.FieldRef<"Registration", 'String'>
+  readonly isMotorized: Prisma.FieldRef<"Registration", 'Boolean'>
   readonly totalPrice: Prisma.FieldRef<"Registration", 'Decimal'>
   readonly status: Prisma.FieldRef<"Registration", 'RegistrationStatus'>
   readonly createdAt: Prisma.FieldRef<"Registration", 'DateTime'>
@@ -1607,6 +1832,25 @@ export type Registration$activitiesArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.RegistrationActivityScalarFieldEnum | Prisma.RegistrationActivityScalarFieldEnum[]
+}
+
+/**
+ * Registration.order
+ */
+export type Registration$orderArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Order
+   */
+  select?: Prisma.OrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Order
+   */
+  omit?: Prisma.OrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderInclude<ExtArgs> | null
+  where?: Prisma.OrderWhereInput
 }
 
 /**
