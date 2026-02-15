@@ -83,6 +83,8 @@ jobs:
           script: |
             set -e
             cd /var/www/acd-preprod
+
+            rm -rf .output prisma package.json package-lock.json docker-compose.yml
             tar -xzf app.tar.gz
             rm app.tar.gz
 
