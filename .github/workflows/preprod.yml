@@ -59,8 +59,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            mkdir -p /var/www/app-preprod
-            cd /var/www/app-preprod
+            mkdir -p /var/www/acd-preprod
+            cd /var/www/acd-preprod
 
             rm -rf *
             tar -xzf - < <(cat)
@@ -72,7 +72,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "app.tar.gz"
-          target: "/var/www/app-preprod/"
+          target: "/var/www/acd-preprod/"
 
       - name: Restart services
         uses: appleboy/ssh-action@v1.0.3
@@ -82,7 +82,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            cd /var/www/app-preprod
+            cd /var/www/acd-preprod
             tar -xzf app.tar.gz
             rm app.tar.gz
 
