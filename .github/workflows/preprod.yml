@@ -34,7 +34,7 @@ jobs:
             prisma \
             package.json \
             package-lock.json \
-            docker-compose.yml \
+            docker-compose.yml
 
       - uses: actions/upload-artifact@v4
         with:
@@ -50,19 +50,6 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: preprod-build
-
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            set -e
-            mkdir -p /var/www/acd-preprod
-            cd /var/www/acd-preprod
-            rm -rf *
-            tar -xzf - < <(cat)
 
       - name: Copy artifact
         uses: appleboy/scp-action@v0.1.7
