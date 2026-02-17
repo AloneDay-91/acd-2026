@@ -73,7 +73,7 @@ jobs:
             tar -xzf app.tar.gz
             rm app.tar.gz
 
-            pm2 start ecosystem.config.js || pm2 restart acd-preprod
-            pm2 save
+            /root/.nvm/versions/node/v20.19.6/bin/pm2 start ecosystem.config.js || /root/.nvm/versions/node/v20.19.6/bin/pm2 restart acd-preprod
+            /root/.nvm/versions/node/v20.19.6/bin/pm2 save
 
             docker compose up -d
