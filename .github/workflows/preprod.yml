@@ -68,11 +68,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
+            
+            PM2="/home/festival-deployer/.nvm/versions/node/v20.20.0/bin/pm2"
+
             cd /var/www/acd-preprod
 
-            pm2 delete acd-preprod || true
-
-            pm2 start ecosystem.config.js
-            pm2 save
+            $PM2 delete acd-preprod || true
+            $PM2 start ecosystem.config.js
+            $PM2 save
 
             docker compose up -d
