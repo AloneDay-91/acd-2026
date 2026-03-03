@@ -4,7 +4,6 @@ import {
   Body,
   Container,
   Section,
-  Heading,
   Text,
   Preview,
   Tailwind,
@@ -23,198 +22,152 @@ interface MealSelection {
 }
 
 defineProps({
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  orderNumber: {
-    type: String,
-    required: true,
-  },
-  totalPrice: {
-    type: Number,
-    required: true,
-  },
-  meals: {
-    type: Array as () => MealSelection[],
-    default: () => [],
-  },
-  activities: {
-    type: Array as () => string[],
-    default: () => [],
-  },
-  appUrl: {
-    type: String,
-    default: "http://localhost:3000",
-  },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  orderNumber: { type: String, required: true },
+  totalPrice: { type: Number, required: true },
+  meals: { type: Array as () => MealSelection[], default: () => [] },
+  activities: { type: Array as () => string[], default: () => [] },
+  appUrl: { type: String, default: "http://localhost:3000" },
+});
+
+const dateStr = new Date().toLocaleDateString("fr-FR", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
 });
 </script>
 
 <template>
   <Html lang="fr">
-    <Preview>Confirmation de votre inscription ACD - {{ orderNumber }}</Preview>
+    <Preview>Confirmation d'inscription ACD — {{ orderNumber }}</Preview>
     <Tailwind :config="tailwindConfig">
-      <Body class="bg-background py-10 font-sans">
-        <Container class="max-w-xl mx-auto">
-          <!-- Header with Logo -->
-          <Section class="px-10 py-6">
+      <Body style="background-color: #f6f9fc; font-family: 'Inter', system-ui, sans-serif; margin: 0; padding: 40px 0;">
+        <Container style="max-width: 560px; margin: 0 auto;">
+
+          <!-- HEADER -->
+          <Section style="background: #ffffff; padding: 36px 48px 28px; border: 1px solid #e5e7eb; border-radius: 16px 16px 0 0; border-bottom: none;">
             <Row>
               <Column>
                 <Img
                   src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                   alt="ACD Logo"
-                  width="64"
-                  height="64"
-                  class="inline-block align-middle"
+                  width="90"
+                  height="36"
+                  style="object-fit: contain; display: block;"
                 />
+              </Column>
+              <Column align="right" style="vertical-align: top;">
+                <Text style="font-size: 22px; font-weight: 300; letter-spacing: 0.06em; text-transform: uppercase; color: #111827; margin: 0 0 4px 0; line-height: 1.2; text-align: right;">
+                  Inscription
+                </Text>
+                <Text style="font-size: 12px; color: #6b7280; margin: 0; text-align: right;">
+                  {{ orderNumber }} · {{ dateStr }}
+                </Text>
               </Column>
             </Row>
           </Section>
 
-          <!-- Main Content Card -->
-          <Section
-            class="bg-white rounded-2xl px-10 py-8"
-            style="border: 1px solid #e4e4e4"
-          >
-            <Heading class="text-2xl font-semibold text-foreground m-0 mb-6">
-              Merci pour votre inscription !
-            </Heading>
-
-            <Text class="text-md text-foreground m-0 mb-4">
-              Bonjour {{ firstName }},
+          <!-- INTRO -->
+          <Section style="background: #ffffff; padding: 24px 48px 20px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
+            <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 24px 0;" />
+            <Text style="font-size: 14px; color: #111827; margin: 0 0 6px 0; line-height: 1.6;">
+              Bonjour <strong>{{ firstName }}</strong>,
             </Text>
-
-            <Text class="text-md text-muted-foreground m-0 mb-6">
-              Votre inscription a bien été enregistrée. Voici le récapitulatif
-              de votre réservation.
+            <Text style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.7;">
+              Votre inscription a bien été enregistrée. Vous trouverez ci-dessous le récapitulatif de votre participation ainsi que la facture en pièce jointe.
             </Text>
+          </Section>
 
-            <!-- Order Number -->
-            <Section
-              class="bg-background rounded-2xl px-6 py-4 mb-6"
-              style="border: 1px solid #e4e4e4"
-            >
-              <Text class="text-sm text-muted-foreground m-0">
-                Numéro de commande
-              </Text>
-              <Text class="text-lg font-semibold text-foreground m-0">
-                {{ orderNumber }}
+          <!-- MEALS -->
+          <template v-if="meals.length > 0">
+            <Section style="background: #ffffff; padding: 20px 48px 0; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
+              <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 16px 0;" />
+              <Text style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; font-weight: 600; margin: 0 0 12px 0;">
+                Repas
               </Text>
             </Section>
-
-            <!-- Personal Info -->
-            <Text class="text-sm font-semibold text-foreground m-0 mb-3">
-              Informations personnelles
-            </Text>
-            <Text class="text-sm text-muted-foreground m-0 mb-1">
-              {{ firstName }} {{ lastName }}
-            </Text>
-            <Hr class="border-border my-6" />
-
-            <!-- Meals -->
-            <template v-if="meals.length > 0">
-              <Text class="text-sm font-semibold text-foreground m-0 mb-3">
-                Repas sélectionnés
-              </Text>
-              <Section
-                v-for="(meal, index) in meals"
-                :key="index"
-                class="bg-background rounded-2xl px-6 py-4 mb-3"
-                style="border: 1px solid #e4e4e4"
-              >
-                <Text class="text-sm font-semibold text-foreground m-0 mb-2">
-                  {{ meal.mealName }}
-                </Text>
-                <Text
-                  v-if="meal.starter"
-                  class="text-sm text-muted-foreground m-0 mb-1"
-                >
-                  Entrée : {{ meal.starter }}
-                </Text>
-                <Text
-                  v-if="meal.main"
-                  class="text-sm text-muted-foreground m-0 mb-1"
-                >
-                  Plat : {{ meal.main }}
-                </Text>
-                <Text
-                  v-if="meal.dessert"
-                  class="text-sm text-muted-foreground m-0"
-                >
-                  Dessert : {{ meal.dessert }}
-                </Text>
-              </Section>
-              <Hr class="border-border my-6" />
-            </template>
-
-            <!-- Activities -->
-            <template v-if="activities.length > 0">
-              <Text class="text-sm font-semibold text-foreground m-0 mb-3">
-                Activités sélectionnées
-              </Text>
-              <Text
-                v-for="(activity, index) in activities"
-                :key="index"
-                class="text-sm text-muted-foreground m-0 mb-1"
-              >
-                &bull; {{ activity }}
-              </Text>
-              <Hr class="border-border my-6" />
-            </template>
-
-            <!-- Total -->
             <Section
-              class="bg-background rounded-2xl px-6 py-4 mb-6"
-              style="border: 1px solid #e4e4e4"
+              v-for="(meal, i) in meals"
+              :key="i"
+              style="background: #ffffff; padding: 0 48px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;"
             >
-              <Row>
-                <Column>
-                  <Text class="text-sm text-muted-foreground m-0">Total</Text>
-                </Column>
-                <Column align="right">
-                  <Text class="text-lg font-semibold text-foreground m-0">
-                    {{ totalPrice.toFixed(2) }} €
+              <Row style="border-bottom: 1px solid #f3f4f6;">
+                <Column style="padding: 10px 0;">
+                  <Text style="font-size: 13px; font-weight: 500; color: #111827; margin: 0 0 3px 0;">
+                    {{ meal.mealName }}
+                  </Text>
+                  <Text
+                    v-if="meal.starter || meal.main || meal.dessert"
+                    style="font-size: 12px; color: #6b7280; margin: 0;"
+                  >
+                    {{ [meal.starter, meal.main, meal.dessert].filter(Boolean).join(" · ") }}
                   </Text>
                 </Column>
               </Row>
             </Section>
+          </template>
 
-            <Text class="text-md text-muted-foreground m-0">
-              Cordialement,
-            </Text>
-            <Text class="text-md font-semibold text-foreground m-0">
-              L'équipe ACD
-            </Text>
-          </Section>
+          <!-- ACTIVITIES -->
+          <template v-if="activities.length > 0">
+            <Section style="background: #ffffff; padding: 20px 48px 0; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
+              <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 16px 0;" />
+              <Text style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; font-weight: 600; margin: 0 0 12px 0;">
+                Activités
+              </Text>
+            </Section>
+            <Section
+              v-for="(activity, i) in activities"
+              :key="i"
+              style="background: #ffffff; padding: 0 48px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;"
+            >
+              <Row style="border-bottom: 1px solid #f3f4f6;">
+                <Column style="padding: 10px 0;">
+                  <Text style="font-size: 13px; color: #111827; margin: 0;">
+                    {{ activity }}
+                  </Text>
+                </Column>
+              </Row>
+            </Section>
+          </template>
 
-          <!-- Footer -->
-          <Section class="py-6 px-10">
-            <Text class="text-xs text-muted text-left m-0 mb-6">
-              Cet email confirme votre inscription. Conservez-le comme
-              justificatif.
-            </Text>
-
+          <!-- TOTAL -->
+          <Section style="background: #ffffff; padding: 20px 48px 28px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
+            <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 16px 0;" />
             <Row>
               <Column>
-                <Text class="text-xs text-muted text-left m-0 mb-6">
-                  © {{ new Date().getFullYear() }} ACD. Tous droits réservés.
+                <Text style="font-size: 14px; font-weight: 600; color: #111827; margin: 0;">Total</Text>
+              </Column>
+              <Column align="right">
+                <Text style="font-size: 14px; font-weight: 600; color: #111827; margin: 0;">{{ totalPrice.toFixed(2) }} €</Text>
+              </Column>
+            </Row>
+          </Section>
+
+          <!-- FOOTER -->
+          <Section style="background: #ffffff; padding: 20px 48px 28px; border: 1px solid #e5e7eb; border-radius: 0 0 16px 16px; border-top: 1px solid #e5e7eb;">
+            <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 20px 0;" />
+            <Row>
+              <Column>
+                <Text style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.6;">
+                  Merci pour votre participation !
+                </Text>
+                <Text style="font-size: 11px; color: #9ca3af; margin: 4px 0 0 0;">
+                  © {{ new Date().getFullYear() }} ACD MMI
                 </Text>
               </Column>
-              <Column align="center">
+              <Column align="right" style="vertical-align: middle;">
                 <Img
                   src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
-                  alt="ACD Logo"
-                  width="48"
-                  height="48"
-                  class="inline-block align-left"
+                  alt="ACD"
+                  width="44"
+                  height="20"
+                  style="object-fit: contain; display: block; margin-left: auto;"
                 />
               </Column>
             </Row>
           </Section>
+
         </Container>
       </Body>
     </Tailwind>

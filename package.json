@@ -49,6 +49,7 @@
     "leaflet": "^1.9.4",
     "lucide-vue-next": "^0.563.0",
     "mongodb": "^7.0.0",
+    "motion-v": "^2.0.0-beta.4",
     "nodemailer": "^7.0.13",
     "nuxt": "^4.3.0",
     "pg": "^8.17.2",

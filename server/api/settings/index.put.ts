@@ -5,6 +5,11 @@ export default defineEventHandler(async (event) => {
     where: { id: "site_settings" },
     update: {
       headerBadgeText: body.headerBadgeText,
+      siteName: body.siteName,
+      eventDate: body.eventDate ? new Date(body.eventDate) : undefined,
+      eventEndDate: body.eventEndDate ? new Date(body.eventEndDate) : undefined,
+      location: body.location,
+      locationAddress: body.locationAddress,
       showProgramme: body.showProgramme,
       showInscription: body.showInscription,
       showAcces: body.showAcces,
@@ -13,6 +18,11 @@ export default defineEventHandler(async (event) => {
     create: {
       id: "site_settings",
       headerBadgeText: body.headerBadgeText,
+      siteName: body.siteName,
+      eventDate: body.eventDate ? new Date(body.eventDate) : undefined,
+      eventEndDate: body.eventEndDate ? new Date(body.eventEndDate) : undefined,
+      location: body.location,
+      locationAddress: body.locationAddress,
       showProgramme: body.showProgramme,
       showInscription: body.showInscription,
       showAcces: body.showAcces,

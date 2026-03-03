@@ -53,22 +53,10 @@ const optionForm = reactive({
   allergens: [] as string[],
 });
 
-const allergenOptions = [
-  { value: "gluten", label: "Gluten" },
-  { value: "crustaces", label: "Crustacés" },
-  { value: "oeufs", label: "Œufs" },
-  { value: "poisson", label: "Poisson" },
-  { value: "arachides", label: "Arachides" },
-  { value: "soja", label: "Soja" },
-  { value: "lait", label: "Lait" },
-  { value: "fruits_coque", label: "Fruits à coque" },
-  { value: "celeri", label: "Céleri" },
-  { value: "moutarde", label: "Moutarde" },
-  { value: "sesame", label: "Sésame" },
-  { value: "sulfites", label: "Sulfites" },
-  { value: "lupin", label: "Lupin" },
-  { value: "mollusques", label: "Mollusques" },
-];
+const allergenOptions = Object.entries(ALLERGEN_MAP).map(([value, info]) => ({
+  value,
+  label: info.label,
+}));
 
 const optionTypeLabels: Record<string, string> = {
   STARTER: "Entrée",
@@ -260,19 +248,17 @@ async function executeDeleteOption() {
                 <span class="font-medium">{{ option.name }}</span>
                 <div
                   v-if="option.hasAllergens && option.allergens.length > 0"
-                  class="flex gap-1"
+                  class="flex flex-wrap gap-1"
                 >
-                  <Badge
+                  <span
                     v-for="allergen in option.allergens"
                     :key="allergen"
-                    variant="destructive"
-                    class="rounded-full text-xs"
+                    class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium"
+                    :class="getAllergenInfo(allergen).badgeClass"
                   >
-                    {{
-                      allergenOptions.find((a) => a.value === allergen)
-                        ?.label || allergen
-                    }}
-                  </Badge>
+                    <Icon :name="getAllergenInfo(allergen).icon" class="h-3 w-3 shrink-0" />
+                    {{ getAllergenInfo(allergen).label }}
+                  </span>
                 </div>
               </div>
               <div class="flex gap-1">
@@ -335,19 +321,17 @@ async function executeDeleteOption() {
                 <span class="font-medium">{{ option.name }}</span>
                 <div
                   v-if="option.hasAllergens && option.allergens.length > 0"
-                  class="flex gap-1"
+                  class="flex flex-wrap gap-1"
                 >
-                  <Badge
+                  <span
                     v-for="allergen in option.allergens"
                     :key="allergen"
-                    variant="destructive"
-                    class="rounded-full text-xs"
+                    class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium"
+                    :class="getAllergenInfo(allergen).badgeClass"
                   >
-                    {{
-                      allergenOptions.find((a) => a.value === allergen)
-                        ?.label || allergen
-                    }}
-                  </Badge>
+                    <Icon :name="getAllergenInfo(allergen).icon" class="h-3 w-3 shrink-0" />
+                    {{ getAllergenInfo(allergen).label }}
+                  </span>
                 </div>
               </div>
               <div class="flex gap-1">
@@ -410,19 +394,17 @@ async function executeDeleteOption() {
                 <span class="font-medium">{{ option.name }}</span>
                 <div
                   v-if="option.hasAllergens && option.allergens.length > 0"
-                  class="flex gap-1"
+                  class="flex flex-wrap gap-1"
                 >
-                  <Badge
+                  <span
                     v-for="allergen in option.allergens"
                     :key="allergen"
-                    variant="destructive"
-                    class="rounded-full text-xs"
+                    class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium"
+                    :class="getAllergenInfo(allergen).badgeClass"
                   >
-                    {{
-                      allergenOptions.find((a) => a.value === allergen)
-                        ?.label || allergen
-                    }}
-                  </Badge>
+                    <Icon :name="getAllergenInfo(allergen).icon" class="h-3 w-3 shrink-0" />
+                    {{ getAllergenInfo(allergen).label }}
+                  </span>
                 </div>
               </div>
               <div class="flex gap-1">
@@ -499,9 +481,10 @@ async function executeDeleteOption() {
                       ? 'default'
                       : 'outline'
                   "
-                  class="rounded-full"
+                  class="rounded-full gap-1"
                   @click="toggleAllergen(allergen.value)"
                 >
+                  <Icon :name="getAllergenInfo(allergen.value).icon" class="h-3 w-3" />
                   {{ allergen.label }}
                 </Button>
               </div>

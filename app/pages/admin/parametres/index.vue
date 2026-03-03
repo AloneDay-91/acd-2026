@@ -24,6 +24,7 @@ const settings = ref({
   eventDate: new Date("2026-06-18") as Date | null,
   eventEndDate: new Date("2026-06-19") as Date | null,
   location: "IUT de Troyes",
+  locationAddress: "9 Rue de Québec, 10000 Troyes",
   registrationOpen: true,
   maxParticipants: 200,
   earlyBirdPrice: 150,
@@ -40,7 +41,17 @@ const saving = ref(false);
 
 watchEffect(() => {
   if (dbSettings.value) {
-    settings.value.headerBadgeText = dbSettings.value.headerBadgeText;
+    if (dbSettings.value.siteName)
+      settings.value.siteName = dbSettings.value.siteName;
+    if (dbSettings.value.eventDate)
+      settings.value.eventDate = new Date(dbSettings.value.eventDate);
+    if (dbSettings.value.eventEndDate)
+      settings.value.eventEndDate = new Date(dbSettings.value.eventEndDate);
+    if (dbSettings.value.location)
+      settings.value.location = dbSettings.value.location;
+    if (dbSettings.value.locationAddress)
+      settings.value.locationAddress = dbSettings.value.locationAddress;
+    settings.value.headerBadgeText = dbSettings.value.headerBadgeText ?? "";
     settings.value.showProgramme = dbSettings.value.showProgramme;
     settings.value.showInscription = dbSettings.value.showInscription;
     settings.value.showAcces = dbSettings.value.showAcces;
@@ -54,6 +65,11 @@ async function save() {
     await $fetch("/api/settings", {
       method: "PUT",
       body: {
+        siteName: settings.value.siteName,
+        eventDate: settings.value.eventDate,
+        eventEndDate: settings.value.eventEndDate,
+        location: settings.value.location,
+        locationAddress: settings.value.locationAddress,
         headerBadgeText: settings.value.headerBadgeText,
         showProgramme: settings.value.showProgramme,
         showInscription: settings.value.showInscription,
@@ -72,12 +88,48 @@ async function save() {
 
 // --- Clear data ---
 const clearOptions = ref([
-  { key: "programme", label: "Programme", description: "Tous les événements du programme", icon: "lucide:calendar", checked: false },
-  { key: "meals", label: "Repas", description: "Tous les repas et leurs options", icon: "lucide:utensils", checked: false },
-  { key: "activities", label: "Activités", description: "Toutes les activités", icon: "lucide:activity", checked: false },
-  { key: "registrations", label: "Inscriptions & Paiements", description: "Toutes les inscriptions, commandes et paiements", icon: "lucide:users", checked: false },
-  { key: "orders", label: "Paiements uniquement", description: "Uniquement les commandes / paiements", icon: "lucide:credit-card", checked: false },
-  { key: "hotels", label: "Hôtels", description: "Tous les hôtels partenaires", icon: "lucide:building-2", checked: false },
+  {
+    key: "programme",
+    label: "Programme",
+    description: "Tous les événements du programme",
+    icon: "lucide:calendar",
+    checked: false,
+  },
+  {
+    key: "meals",
+    label: "Repas",
+    description: "Tous les repas et leurs options",
+    icon: "lucide:utensils",
+    checked: false,
+  },
+  {
+    key: "activities",
+    label: "Activités",
+    description: "Toutes les activités",
+    icon: "lucide:activity",
+    checked: false,
+  },
+  {
+    key: "registrations",
+    label: "Inscriptions & Paiements",
+    description: "Toutes les inscriptions, commandes et paiements",
+    icon: "lucide:users",
+    checked: false,
+  },
+  {
+    key: "orders",
+    label: "Paiements uniquement",
+    description: "Uniquement les commandes / paiements",
+    icon: "lucide:credit-card",
+    checked: false,
+  },
+  {
+    key: "hotels",
+    label: "Hôtels",
+    description: "Tous les hôtels partenaires",
+    icon: "lucide:building-2",
+    checked: false,
+  },
 ]);
 
 const showClearDialog = ref(false);
@@ -142,14 +194,22 @@ async function executeClear() {
         </div>
       </CardHeader>
       <CardContent class="space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div class="space-y-2">
             <Label>Nom de l'événement</Label>
             <Input v-model="settings.siteName" class="rounded-xl" />
           </div>
           <div class="space-y-2">
-            <Label>Lieu</Label>
+            <Label>Lieu (nom)</Label>
             <Input v-model="settings.location" class="rounded-xl" />
+          </div>
+          <div class="space-y-2">
+            <Label>Adresse du lieu</Label>
+            <Input
+              v-model="settings.locationAddress"
+              class="rounded-xl"
+              placeholder="ex: 9 Rue de Québec, 10000 Troyes"
+            />
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -200,50 +260,47 @@ async function executeClear() {
         </div>
       </CardHeader>
       <CardContent class="space-y-4">
-        <div
-          class="flex items-center justify-between p-4 rounded-xl bg-muted/50"
-        >
-          <div>
-            <p class="font-medium">Programme</p>
-            <p class="text-sm text-muted-foreground">
-              Afficher la page Programme
-            </p>
-          </div>
-          <Switch v-model="settings.showProgramme" />
-        </div>
-        <div
-          class="flex items-center justify-between p-4 rounded-xl bg-muted/50"
-        >
-          <div>
-            <p class="font-medium">Inscription</p>
-            <p class="text-sm text-muted-foreground">
-              Afficher la page Inscription
-            </p>
-          </div>
-          <Switch v-model="settings.showInscription" />
-        </div>
-        <div
-          class="flex items-center justify-between p-4 rounded-xl bg-muted/50"
-        >
-          <div>
-            <p class="font-medium">Accès</p>
-            <p class="text-sm text-muted-foreground">
+        <Item variant="outline">
+          <ItemContent>
+            <ItemTitle>Programme</ItemTitle>
+            <ItemDescription> Afficher la page Programme </ItemDescription>
+          </ItemContent>
+          <ItemActions>
+            <Switch v-model="settings.showProgramme" />
+          </ItemActions>
+        </Item>
+
+        <Item variant="outline">
+          <ItemContent>
+            <ItemTitle>Inscription</ItemTitle>
+            <ItemDescription> Afficher la page Inscription </ItemDescription>
+          </ItemContent>
+          <ItemActions>
+            <Switch v-model="settings.showInscription" />
+          </ItemActions>
+        </Item>
+
+        <Item variant="outline">
+          <ItemContent>
+            <ItemTitle>Accès</ItemTitle>
+            <ItemDescription>
               Afficher la page Accès & Transports
-            </p>
-          </div>
-          <Switch v-model="settings.showAcces" />
-        </div>
-        <div
-          class="flex items-center justify-between p-4 rounded-xl bg-muted/50"
-        >
-          <div>
-            <p class="font-medium">Hébergement</p>
-            <p class="text-sm text-muted-foreground">
-              Afficher la page Hébergement
-            </p>
-          </div>
-          <Switch v-model="settings.showHotels" />
-        </div>
+            </ItemDescription>
+          </ItemContent>
+          <ItemActions>
+            <Switch v-model="settings.showAcces" />
+          </ItemActions>
+        </Item>
+
+        <Item variant="outline">
+          <ItemContent>
+            <ItemTitle>Hébergement</ItemTitle>
+            <ItemDescription> Afficher la page Hébergement </ItemDescription>
+          </ItemContent>
+          <ItemActions>
+            <Switch v-model="settings.showHotels" />
+          </ItemActions>
+        </Item>
       </CardContent>
     </Card>
 
@@ -254,10 +311,7 @@ async function executeClear() {
           <div
             class="h-10 w-10 rounded-xl bg-destructive/10 flex items-center justify-center"
           >
-            <Icon
-              name="lucide:trash-2"
-              class="h-5 w-5 text-destructive"
-            />
+            <Icon name="lucide:trash-2" class="h-5 w-5 text-destructive" />
           </div>
           <div>
             <CardTitle>Purger les données</CardTitle>
@@ -321,14 +375,17 @@ async function executeClear() {
           </div>
         </div>
       </CardContent>
-      <CardFooter class="border-t bg-muted/20 flex items-center justify-between gap-4 rounded-b-2xl">
+      <CardFooter
+        class="border-t bg-muted/20 flex items-center justify-between gap-4 rounded-b-2xl"
+      >
         <p class="text-xs text-muted-foreground">
           <template v-if="hasSelection">
-            {{ selectedClearTables.length }} catégorie{{ selectedClearTables.length > 1 ? 's' : '' }} sélectionnée{{ selectedClearTables.length > 1 ? 's' : '' }}
+            {{ selectedClearTables.length }} catégorie{{
+              selectedClearTables.length > 1 ? "s" : ""
+            }}
+            sélectionnée{{ selectedClearTables.length > 1 ? "s" : "" }}
           </template>
-          <template v-else>
-            Aucune sélection
-          </template>
+          <template v-else> Aucune sélection </template>
         </p>
         <Button
           variant="destructive"
@@ -350,8 +407,13 @@ async function executeClear() {
     >
       <AlertDialogContent class="rounded-2xl">
         <AlertDialogHeader>
-          <div class="mx-auto h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center mb-2">
-            <Icon name="lucide:alert-triangle" class="h-6 w-6 text-destructive" />
+          <div
+            class="mx-auto h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center mb-2"
+          >
+            <Icon
+              name="lucide:alert-triangle"
+              class="h-6 w-6 text-destructive"
+            />
           </div>
           <AlertDialogTitle class="text-center">
             Confirmer la suppression
@@ -367,12 +429,16 @@ async function executeClear() {
             :key="option.key"
             class="flex items-center gap-3 p-3 rounded-xl bg-destructive/5"
           >
-            <div class="h-8 w-8 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
+            <div
+              class="h-8 w-8 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0"
+            >
               <Icon :name="option.icon" class="h-4 w-4 text-destructive" />
             </div>
             <div>
               <p class="text-sm font-medium">{{ option.label }}</p>
-              <p class="text-xs text-muted-foreground">{{ option.description }}</p>
+              <p class="text-xs text-muted-foreground">
+                {{ option.description }}
+              </p>
             </div>
           </div>
         </div>

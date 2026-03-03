@@ -247,6 +247,8 @@ async function handleUpdateRegistration() {
         firstName: registrationForm.firstName,
         lastName: registrationForm.lastName,
         phone: registrationForm.phone,
+        allergens: registrationForm.allergens || null,
+        isMotorized: registrationForm.isMotorized,
       },
     });
     await refreshRegistration();
@@ -281,6 +283,41 @@ function formatDate(dateStr: string) {
 function formatPrice(price: any) {
   return Number(price || 0).toFixed(2);
 }
+
+const downloadingInvoice = ref(false);
+
+async function downloadInvoice() {
+  if (!registration.value?.id) return;
+  downloadingInvoice.value = true;
+  try {
+    const response = await $fetch(
+      `/api/registrations/${registration.value.id}/invoice`,
+      {
+        responseType: "blob",
+      },
+    );
+
+    // Create a download link and trigger it
+    const url = window.URL.createObjectURL(response as Blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `Facture_${registration.value.order?.orderNumber || registration.value.id}.pdf`,
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    toast.success("Facture téléchargée");
+  } catch (error) {
+    console.error(error);
+    toast.error("Impossible de générer la facture");
+  } finally {
+    downloadingInvoice.value = false;
+  }
+}
 </script>
 
 <template>
@@ -298,7 +335,9 @@ function formatPrice(price: any) {
       <section class="container max-w-5xl mx-auto px-6 pt-28 pb-16">
         <!-- Breadcrumb -->
         <nav class="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-          <NuxtLink to="/" class="hover:text-foreground transition-colors">Accueil</NuxtLink>
+          <NuxtLink to="/" class="hover:text-foreground transition-colors"
+            >Accueil</NuxtLink
+          >
           <Icon name="lucide:chevron-right" class="h-3.5 w-3.5" />
           <span class="text-foreground font-medium">Mon profil</span>
         </nav>
@@ -306,7 +345,9 @@ function formatPrice(price: any) {
         <!-- Page title -->
         <div class="mb-8">
           <h1 class="text-2xl font-bold tracking-tight">Mon profil</h1>
-          <p class="text-muted-foreground mt-1">Gérez vos informations personnelles et vos préférences</p>
+          <p class="text-muted-foreground mt-1">
+            Gérez vos informations personnelles et vos préférences
+          </p>
         </div>
 
         <!-- Incomplete profile banner -->
@@ -314,8 +355,8 @@ function formatPrice(price: any) {
           <AlertCircleIcon />
           <AlertTitle>Profil incomplet</AlertTitle>
           <AlertDescription>
-            Veuillez renseigner votre numéro de téléphone et sélectionner
-            votre IUT.
+            Veuillez renseigner votre numéro de téléphone et sélectionner votre
+            IUT.
           </AlertDescription>
         </Alert>
 
@@ -329,9 +370,11 @@ function formatPrice(price: any) {
                 :key="item.id"
                 @click="activeSection = item.id"
                 class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 w-full text-left"
-                :class="activeSection === item.id
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'"
+                :class="
+                  activeSection === item.id
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                "
               >
                 <Icon :name="item.icon" class="h-4 w-4 shrink-0" />
                 <span class="hidden sm:inline">{{ item.label }}</span>
@@ -354,27 +397,12 @@ function formatPrice(price: any) {
                   <Alert v-if="profileForm.error" variant="destructive">
                     <AlertDescription>{{ profileForm.error }}</AlertDescription>
                   </Alert>
-
-                  <!-- Avatar section -->
-                  <div class="flex items-center gap-6">
-                    <div
-                      class="h-20 w-20 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold shrink-0"
-                    >
-                      {{ userInitials }}
-                    </div>
-                    <div
-                      class="flex-1 flex flex-col items-center justify-center gap-2 py-8 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-muted-foreground/50 transition-colors"
-                    >
-                      <Icon name="lucide:camera" class="h-6 w-6 text-muted-foreground" />
-                      <p class="text-sm text-muted-foreground">Cliquez pour uploader ou glissez-déposez</p>
-                      <p class="text-xs text-muted-foreground/60">PNG, JPG ou GIF (max. 2MB)</p>
-                    </div>
-                  </div>
-
                   <!-- Name fields -->
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-2">
-                      <Label for="firstName" class="text-sm font-medium">Prénom</Label>
+                      <Label for="firstName" class="text-sm font-medium"
+                        >Prénom</Label
+                      >
                       <Input
                         id="firstName"
                         v-model="profileForm.firstName"
@@ -383,7 +411,9 @@ function formatPrice(price: any) {
                       />
                     </div>
                     <div class="space-y-2">
-                      <Label for="lastName" class="text-sm font-medium">Nom</Label>
+                      <Label for="lastName" class="text-sm font-medium"
+                        >Nom</Label
+                      >
                       <Input
                         id="lastName"
                         v-model="profileForm.lastName"
@@ -396,11 +426,7 @@ function formatPrice(price: any) {
                   <!-- Email (read-only) -->
                   <div class="space-y-2">
                     <Label class="text-sm font-medium">Email</Label>
-                    <Input
-                      :value="session.data.user.email"
-                      disabled
-                      class="bg-muted/40 text-muted-foreground"
-                    />
+                    <Input :model-value="session.data?.user?.email" disabled />
                     <p class="text-xs text-muted-foreground">
                       L'adresse email ne peut pas être modifiée.
                     </p>
@@ -408,7 +434,9 @@ function formatPrice(price: any) {
 
                   <!-- Phone -->
                   <div class="space-y-2">
-                    <Label for="tel" class="text-sm font-medium">Téléphone</Label>
+                    <Label for="tel" class="text-sm font-medium"
+                      >Téléphone</Label
+                    >
                     <Input
                       id="tel"
                       v-model="profileForm.tel"
@@ -442,13 +470,8 @@ function formatPrice(price: any) {
                   <!-- Actions -->
                   <Separator />
                   <div class="flex justify-end gap-3">
-                    <Button type="button" variant="outline">
-                      Annuler
-                    </Button>
-                    <Button
-                      type="submit"
-                      :disabled="profileForm.isLoading"
-                    >
+                    <Button type="button" variant="outline"> Annuler </Button>
+                    <Button type="submit" :disabled="profileForm.isLoading">
                       <Icon
                         v-if="profileForm.isLoading"
                         name="lucide:loader-2"
@@ -464,35 +487,29 @@ function formatPrice(price: any) {
             <!-- ==================== REGISTRATION ==================== -->
             <div v-else-if="activeSection === 'registration'" class="space-y-6">
               <!-- No registration -->
-              <Card
+              <Empty
                 v-if="!registration && regStatus !== 'pending'"
-                class="rounded-2xl"
+                class="py-16"
               >
-                <CardContent class="py-16">
-                  <div class="text-center space-y-5">
-                    <div
-                      class="mx-auto w-14 h-14 rounded-full bg-muted flex items-center justify-center"
-                    >
-                      <Icon
-                        name="lucide:clipboard-x"
-                        class="h-7 w-7 text-muted-foreground"
-                      />
-                    </div>
-                    <div class="space-y-2">
-                      <h3 class="text-lg font-semibold">Aucune inscription</h3>
-                      <p class="text-muted-foreground text-sm max-w-sm mx-auto">
-                        Vous n'avez pas encore d'inscription. Inscrivez-vous pour participer à l'ACD MMI 2026.
-                      </p>
-                    </div>
-                    <Button as-child size="lg">
-                      <NuxtLink to="/inscription">
-                        S'inscrire maintenant
-                        <Icon name="lucide:arrow-right" class="ml-2 h-4 w-4" />
-                      </NuxtLink>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                <EmptyMedia variant="icon">
+                  <Icon name="lucide:clipboard-x" class="size-5" />
+                </EmptyMedia>
+                <EmptyHeader>
+                  <EmptyTitle>Aucune inscription</EmptyTitle>
+                  <EmptyDescription>
+                    Vous n'avez pas encore d'inscription. Inscrivez-vous pour
+                    participer à l'ACD MMI 2026.
+                  </EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                  <Button as-child size="lg">
+                    <NuxtLink to="/inscription">
+                      S'inscrire maintenant
+                      <Icon name="lucide:arrow-right" class="ml-2 h-4 w-4" />
+                    </NuxtLink>
+                  </Button>
+                </EmptyContent>
+              </Empty>
 
               <!-- Loading -->
               <div
@@ -505,245 +522,343 @@ function formatPrice(price: any) {
                 />
               </div>
 
-              <!-- Registration exists -->
-              <template v-else-if="registration">
-                <!-- Overview Card -->
-                <Card class="rounded-2xl">
-                  <CardHeader>
-                    <div class="flex items-center justify-between flex-wrap gap-3">
+              <!-- Registration exists — Order-tracking style -->
+              <Card
+                v-else-if="registration"
+                class="rounded-2xl overflow-hidden p-0"
+              >
+                <!-- Top metadata bar -->
+                <div class="bg-muted/40 border-b px-6 py-4">
+                  <div
+                    class="flex flex-wrap items-center justify-between gap-4"
+                  >
+                    <div
+                      class="flex flex-wrap items-center gap-x-8 gap-y-2 text-sm"
+                    >
                       <div>
-                        <CardTitle class="text-lg">Mon inscription</CardTitle>
-                        <CardDescription>
-                          Inscrit le {{ formatDate(registration.createdAt) }}
-                        </CardDescription>
+                        <p class="text-muted-foreground text-xs">Inscrit le</p>
+                        <p class="font-medium">
+                          {{ formatDate(registration.createdAt) }}
+                        </p>
                       </div>
+                      <div v-if="registration.order">
+                        <p class="text-muted-foreground text-xs">N° commande</p>
+                        <p class="font-medium">
+                          {{ registration.order.orderNumber }}
+                        </p>
+                      </div>
+                      <div>
+                        <p class="text-muted-foreground text-xs">Total</p>
+                        <p class="font-medium">
+                          {{ formatPrice(registration.totalPrice) }} EUR
+                        </p>
+                      </div>
+                    </div>
+                    <Badge
+                      :variant="
+                        registration.status === 'CONFIRMED'
+                          ? 'default'
+                          : registration.status === 'CANCELLED'
+                            ? 'destructive'
+                            : 'outline'
+                      "
+                    >
+                      <Icon
+                        :name="
+                          statusMap[registration.status]?.icon || 'lucide:clock'
+                        "
+                        class="h-3 w-3 mr-1"
+                      />
+                      {{
+                        statusMap[registration.status]?.label ||
+                        registration.status
+                      }}
+                    </Badge>
+                  </div>
+                </div>
+
+                <!-- Status banner -->
+                <div
+                  class="px-6 py-4 border-b flex items-center justify-between gap-4"
+                >
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0"
+                    >
+                      <Icon
+                        :name="
+                          registration.status === 'CONFIRMED'
+                            ? 'lucide:circle-check'
+                            : registration.status === 'CANCELLED'
+                              ? 'lucide:circle-x'
+                              : 'lucide:hourglass'
+                        "
+                        class="h-5 w-5 text-primary"
+                      />
+                    </div>
+                    <div>
+                      <p class="font-medium">
+                        {{
+                          registration.status === "CONFIRMED"
+                            ? "Inscription confirmée"
+                            : registration.status === "CANCELLED"
+                              ? "Inscription annulée"
+                              : "En attente de confirmation"
+                        }}
+                      </p>
+                      <p class="text-sm text-muted-foreground">
+                        {{ registration.firstName }}
+                        {{ registration.lastName }} &middot;
+                        {{ registration.email }} &middot;
+                        {{ registration.phone }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      @click="downloadInvoice"
+                      :disabled="downloadingInvoice"
+                      v-if="
+                        ['PAID', 'PENDING'].includes(
+                          registration.order?.paymentStatus,
+                        )
+                      "
+                    >
+                      <Icon
+                        v-if="downloadingInvoice"
+                        name="lucide:loader-2"
+                        class="mr-2 h-3.5 w-3.5 animate-spin"
+                      />
+                      <Icon
+                        v-else
+                        name="lucide:file-text"
+                        class="mr-2 h-3.5 w-3.5"
+                      />
+                      Facture
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      @click="editingRegistration = true"
+                    >
+                      <Icon name="lucide:pencil" class="mr-2 h-3.5 w-3.5" />
+                      Modifier
+                    </Button>
+                  </div>
+                </div>
+
+                <!-- Items list -->
+                <div class="divide-y">
+                  <!-- Meals -->
+                  <div
+                    v-for="rm in registration.meals"
+                    :key="rm.id"
+                    class="px-6 py-5 flex items-start gap-4"
+                  >
+                    <div
+                      class="h-12 w-12 rounded-xl bg-muted flex items-center justify-center shrink-0"
+                    >
+                      <Icon
+                        name="lucide:utensils"
+                        class="h-5 w-5 text-muted-foreground"
+                      />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="font-medium">{{ rm.meal?.name }}</p>
+                      <div class="flex flex-wrap gap-1.5 mt-1.5">
+                        <Badge
+                          v-if="rm.starterOption"
+                          variant="secondary"
+                          class="text-xs font-normal"
+                        >
+                          Entrée: {{ rm.starterOption.name }}
+                        </Badge>
+                        <Badge
+                          v-if="rm.mainOption"
+                          variant="secondary"
+                          class="text-xs font-normal"
+                        >
+                          Plat: {{ rm.mainOption.name }}
+                        </Badge>
+                        <Badge
+                          v-if="rm.dessertOption"
+                          variant="secondary"
+                          class="text-xs font-normal"
+                        >
+                          Dessert: {{ rm.dessertOption.name }}
+                        </Badge>
+                      </div>
+                    </div>
+                    <p class="font-medium shrink-0">
+                      {{ formatPrice(rm.meal?.price) }} EUR
+                    </p>
+                  </div>
+
+                  <!-- Activities -->
+                  <div
+                    v-for="ra in registration.activities"
+                    :key="ra.id"
+                    class="px-6 py-5 flex items-start gap-4"
+                  >
+                    <div
+                      class="h-12 w-12 rounded-xl bg-muted flex items-center justify-center shrink-0"
+                    >
+                      <Icon
+                        name="lucide:activity"
+                        class="h-5 w-5 text-muted-foreground"
+                      />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="font-medium">{{ ra.activity?.name }}</p>
+                      <p
+                        v-if="ra.activity?.description"
+                        class="text-sm text-muted-foreground mt-0.5 line-clamp-1"
+                      >
+                        {{ ra.activity.description }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Extra info row: allergens + motorized -->
+                  <div
+                    v-if="registration.allergens || registration.isMotorized"
+                    class="px-6 py-5 flex flex-wrap gap-4"
+                  >
+                    <div
+                      v-if="registration.allergens"
+                      class="flex items-center gap-2 text-sm"
+                    >
+                      <Icon
+                        name="lucide:alert-triangle"
+                        class="h-4 w-4 text-orange-500 shrink-0"
+                      />
+                      <span class="text-muted-foreground">Allergènes :</span>
+                      <span class="font-medium">{{
+                        registration.allergens
+                      }}</span>
+                    </div>
+                    <div
+                      v-if="registration.isMotorized"
+                      class="flex items-center gap-2 text-sm"
+                    >
+                      <Icon
+                        name="lucide:car"
+                        class="h-4 w-4 text-primary shrink-0"
+                      />
+                      <span class="font-medium">Motorisé</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Footer -->
+                <div
+                  class="border-t bg-muted/20 px-6 py-4 flex items-center justify-between"
+                >
+                  <div
+                    v-if="registration.order"
+                    class="flex items-center gap-4 text-sm"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="text-muted-foreground">Paiement</span>
                       <Badge
                         :variant="
-                          registration.status === 'CONFIRMED'
-                            ? 'default'
-                            : registration.status === 'CANCELLED'
-                              ? 'destructive'
-                              : 'outline'
+                          (paymentStatusMap[registration.order.paymentStatus]
+                            ?.variant as any) || 'outline'
                         "
+                        class="text-xs"
                       >
-                        <Icon
-                          :name="
-                            statusMap[registration.status]?.icon || 'lucide:clock'
-                          "
-                          class="h-3 w-3 mr-1"
-                        />
                         {{
-                          statusMap[registration.status]?.label ||
-                          registration.status
+                          paymentStatusMap[registration.order.paymentStatus]
+                            ?.label || registration.order.paymentStatus
                         }}
                       </Badge>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <!-- View mode -->
-                    <div v-if="!editingRegistration" class="space-y-6">
-                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="space-y-1">
-                          <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Nom complet</p>
-                          <p class="font-medium">{{ registration.firstName }} {{ registration.lastName }}</p>
-                        </div>
-                        <div class="space-y-1">
-                          <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</p>
-                          <p class="font-medium truncate">{{ registration.email }}</p>
-                        </div>
-                        <div class="space-y-1">
-                          <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Téléphone</p>
-                          <p class="font-medium">{{ registration.phone }}</p>
-                        </div>
-                        <div class="space-y-1">
-                          <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Motorisé</p>
-                          <div class="flex items-center gap-2">
-                            <Icon
-                              :name="registration.isMotorized ? 'lucide:car' : 'lucide:x'"
-                              class="h-4 w-4"
-                              :class="registration.isMotorized ? 'text-primary' : 'text-muted-foreground'"
-                            />
-                            <p class="font-medium">{{ registration.isMotorized ? "Oui" : "Non" }}</p>
-                          </div>
-                        </div>
-                        <div v-if="registration.allergens" class="space-y-1 sm:col-span-2">
-                          <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Allergènes</p>
-                          <p class="font-medium">{{ registration.allergens }}</p>
-                        </div>
-                      </div>
-
-                      <Separator />
-                      <div class="flex justify-end">
-                        <Button
-                          variant="outline"
-                          @click="editingRegistration = true"
-                        >
-                          <Icon name="lucide:pencil" class="mr-2 h-4 w-4" />
-                          Modifier
-                        </Button>
-                      </div>
-                    </div>
-
-                    <!-- Edit mode -->
-                    <form
-                      v-else
-                      @submit.prevent="handleUpdateRegistration"
-                      class="space-y-5"
+                    <span
+                      v-if="registration.order.paymentMethod"
+                      class="text-muted-foreground"
                     >
-                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="space-y-2">
-                          <Label class="text-sm font-medium">Prénom</Label>
-                          <Input v-model="registrationForm.firstName" />
-                        </div>
-                        <div class="space-y-2">
-                          <Label class="text-sm font-medium">Nom</Label>
-                          <Input v-model="registrationForm.lastName" />
-                        </div>
+                      via
+                      <span class="capitalize">{{
+                        registration.order.paymentMethod?.toLowerCase()
+                      }}</span>
+                    </span>
+                  </div>
+                  <div v-else />
+                  <NuxtLink
+                    to="/inscription"
+                    class="text-sm font-medium text-primary hover:underline underline-offset-4 flex items-center gap-1"
+                  >
+                    Besoin d'aide ?
+                  </NuxtLink>
+                </div>
+              </Card>
+
+              <!-- Edit dialog -->
+              <AlertDialog v-model:open="editingRegistration">
+                <AlertDialogContent class="max-w-lg">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle
+                      >Modifier mon inscription</AlertDialogTitle
+                    >
+                    <AlertDialogDescription>
+                      Modifiez vos informations personnelles liées à
+                      l'inscription.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+
+                  <form
+                    @submit.prevent="handleUpdateRegistration"
+                    class="space-y-4"
+                  >
+                    <div class="grid grid-cols-2 gap-4">
+                      <div class="space-y-2">
+                        <Label class="text-sm font-medium">Prénom</Label>
+                        <Input v-model="registrationForm.firstName" />
                       </div>
                       <div class="space-y-2">
-                        <Label class="text-sm font-medium">Téléphone</Label>
-                        <Input v-model="registrationForm.phone" type="tel" />
-                      </div>
-                      <Separator />
-                      <div class="flex gap-3 justify-end">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          @click="cancelEditRegistration"
-                        >
-                          Annuler
-                        </Button>
-                        <Button
-                          type="submit"
-                          :disabled="registrationForm.isLoading"
-                        >
-                          <Icon
-                            v-if="registrationForm.isLoading"
-                            name="lucide:loader-2"
-                            class="mr-2 h-4 w-4 animate-spin"
-                          />
-                          Enregistrer
-                        </Button>
-                      </div>
-                    </form>
-                  </CardContent>
-                </Card>
-
-                <!-- Order & Payment -->
-                <Card v-if="registration.order" class="rounded-2xl">
-                  <CardHeader>
-                    <CardTitle class="text-lg">Commande</CardTitle>
-                    <CardDescription>{{ registration.order.orderNumber }}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div class="space-y-1">
-                        <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Montant</p>
-                        <p class="text-2xl font-bold">
-                          {{ formatPrice(registration.order.amount) }}
-                          <span class="text-sm font-normal text-muted-foreground">EUR</span>
-                        </p>
-                      </div>
-                      <div class="space-y-1">
-                        <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Statut paiement</p>
-                        <Badge
-                          :variant="(paymentStatusMap[registration.order.paymentStatus]?.variant as any) || 'outline'"
-                          class="mt-1"
-                        >
-                          {{ paymentStatusMap[registration.order.paymentStatus]?.label || registration.order.paymentStatus }}
-                        </Badge>
-                      </div>
-                      <div v-if="registration.order.paymentMethod" class="space-y-1">
-                        <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Mode de paiement</p>
-                        <p class="font-medium capitalize mt-1">{{ registration.order.paymentMethod?.toLowerCase() }}</p>
+                        <Label class="text-sm font-medium">Nom</Label>
+                        <Input v-model="registrationForm.lastName" />
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-
-                <!-- Meals -->
-                <Card
-                  v-if="registration.meals && registration.meals.length > 0"
-                  class="rounded-2xl"
-                >
-                  <CardHeader>
-                    <CardTitle class="text-lg">Repas sélectionnés</CardTitle>
-                    <CardDescription>
-                      {{ registration.meals.length }} repas choisi{{ registration.meals.length > 1 ? "s" : "" }}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div class="space-y-3">
-                      <div
-                        v-for="rm in registration.meals"
-                        :key="rm.id"
-                        class="flex items-start justify-between gap-4 p-4 rounded-xl bg-muted/30 border border-border/50"
-                      >
-                        <div class="space-y-2 min-w-0">
-                          <p class="font-semibold">{{ rm.meal?.name }}</p>
-                          <div class="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                            <span v-if="rm.starterOption" class="inline-flex items-center gap-1 bg-background px-2.5 py-1 rounded-md border">
-                              Entrée: {{ rm.starterOption.name }}
-                            </span>
-                            <span v-if="rm.mainOption" class="inline-flex items-center gap-1 bg-background px-2.5 py-1 rounded-md border">
-                              Plat: {{ rm.mainOption.name }}
-                            </span>
-                            <span v-if="rm.dessertOption" class="inline-flex items-center gap-1 bg-background px-2.5 py-1 rounded-md border">
-                              Dessert: {{ rm.dessertOption.name }}
-                            </span>
-                          </div>
-                        </div>
-                        <Badge variant="outline" class="shrink-0">
-                          {{ formatPrice(rm.meal?.price) }} EUR
-                        </Badge>
-                      </div>
+                    <div class="space-y-2">
+                      <Label class="text-sm font-medium">Téléphone</Label>
+                      <Input v-model="registrationForm.phone" type="tel" />
                     </div>
-                  </CardContent>
-                </Card>
-
-                <!-- Activities -->
-                <Card
-                  v-if="registration.activities && registration.activities.length > 0"
-                  class="rounded-2xl"
-                >
-                  <CardHeader>
-                    <CardTitle class="text-lg">Activités choisies</CardTitle>
-                    <CardDescription>
-                      {{ registration.activities.length }} activité{{ registration.activities.length > 1 ? "s" : "" }}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div
-                        v-for="ra in registration.activities"
-                        :key="ra.id"
-                        class="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/50"
-                      >
-                        <Icon name="lucide:check-circle-2" class="h-4 w-4 text-primary shrink-0" />
-                        <div class="min-w-0">
-                          <p class="font-medium text-sm">{{ ra.activity?.name }}</p>
-                          <p v-if="ra.activity?.description" class="text-xs text-muted-foreground line-clamp-1">
-                            {{ ra.activity.description }}
-                          </p>
-                        </div>
-                      </div>
+                    <div class="space-y-2">
+                      <Label class="text-sm font-medium">Allergènes</Label>
+                      <Input
+                        v-model="registrationForm.allergens"
+                        placeholder="Ex: gluten, lactose..."
+                      />
                     </div>
-                  </CardContent>
-                </Card>
-
-                <!-- Total -->
-                <Card class="rounded-2xl border-primary/20 bg-primary/[0.02]">
-                  <CardContent class="py-5">
                     <div class="flex items-center justify-between">
-                      <span class="font-semibold">Total inscription</span>
-                      <span class="text-2xl font-bold">
-                        {{ formatPrice(registration.totalPrice) }}
-                        <span class="text-sm font-normal text-muted-foreground">EUR</span>
-                      </span>
+                      <Label class="text-sm font-medium"
+                        >Véhicule motorisé</Label
+                      >
+                      <Switch v-model:checked="registrationForm.isMotorized" />
                     </div>
-                  </CardContent>
-                </Card>
-              </template>
+
+                    <AlertDialogFooter>
+                      <AlertDialogCancel @click="cancelEditRegistration"
+                        >Annuler</AlertDialogCancel
+                      >
+                      <Button
+                        type="submit"
+                        :disabled="registrationForm.isLoading"
+                      >
+                        <Icon
+                          v-if="registrationForm.isLoading"
+                          name="lucide:loader-2"
+                          class="mr-2 h-4 w-4 animate-spin"
+                        />
+                        Enregistrer
+                      </Button>
+                    </AlertDialogFooter>
+                  </form>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
 
             <!-- ==================== SECURITY ==================== -->
@@ -757,13 +872,20 @@ function formatPrice(price: any) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form @submit.prevent="handleChangePassword" class="space-y-5">
+                  <form
+                    @submit.prevent="handleChangePassword"
+                    class="space-y-5"
+                  >
                     <Alert v-if="passwordForm.error" variant="destructive">
-                      <AlertDescription>{{ passwordForm.error }}</AlertDescription>
+                      <AlertDescription>{{
+                        passwordForm.error
+                      }}</AlertDescription>
                     </Alert>
 
                     <div class="space-y-2">
-                      <Label for="currentPassword" class="text-sm font-medium">Mot de passe actuel</Label>
+                      <Label for="currentPassword" class="text-sm font-medium"
+                        >Mot de passe actuel</Label
+                      >
                       <Input
                         id="currentPassword"
                         v-model="passwordForm.currentPassword"
@@ -776,7 +898,9 @@ function formatPrice(price: any) {
                     <Separator />
 
                     <div class="space-y-2">
-                      <Label for="newPassword" class="text-sm font-medium">Nouveau mot de passe</Label>
+                      <Label for="newPassword" class="text-sm font-medium"
+                        >Nouveau mot de passe</Label
+                      >
                       <Input
                         id="newPassword"
                         v-model="passwordForm.newPassword"
@@ -784,11 +908,15 @@ function formatPrice(price: any) {
                         placeholder="••••••••"
                         required
                       />
-                      <p class="text-xs text-muted-foreground">Minimum 8 caractères.</p>
+                      <p class="text-xs text-muted-foreground">
+                        Minimum 8 caractères.
+                      </p>
                     </div>
 
                     <div class="space-y-2">
-                      <Label for="confirmPassword" class="text-sm font-medium">Confirmer le mot de passe</Label>
+                      <Label for="confirmPassword" class="text-sm font-medium"
+                        >Confirmer le mot de passe</Label
+                      >
                       <Input
                         id="confirmPassword"
                         v-model="passwordForm.confirmPassword"
@@ -801,10 +929,7 @@ function formatPrice(price: any) {
                     <Separator />
                     <div class="flex justify-end gap-3">
                       <Button type="button" variant="outline">Annuler</Button>
-                      <Button
-                        type="submit"
-                        :disabled="passwordForm.isLoading"
-                      >
+                      <Button type="submit" :disabled="passwordForm.isLoading">
                         <Icon
                           v-if="passwordForm.isLoading"
                           name="lucide:loader-2"
@@ -820,13 +945,17 @@ function formatPrice(price: any) {
               <!-- Danger Zone -->
               <Card class="rounded-2xl border-destructive/30">
                 <CardHeader>
-                  <CardTitle class="text-lg text-destructive">Zone de danger</CardTitle>
+                  <CardTitle class="text-lg text-destructive"
+                    >Zone de danger</CardTitle
+                  >
                   <CardDescription>
                     Actions irréversibles sur votre compte.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div
+                    class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                  >
                     <div class="space-y-1">
                       <p class="font-semibold">Supprimer mon compte</p>
                       <p class="text-sm text-muted-foreground">
@@ -836,13 +965,15 @@ function formatPrice(price: any) {
                     <AlertDialog v-model:open="showDeleteDialog">
                       <AlertDialogTrigger as-child>
                         <Button variant="destructive" class="shrink-0">
-                          <Icon name="lucide:trash-2" class="mr-2 h-4 w-4" />
+                          <Icon name="lucide:trash-2" class="h-4 w-4" />
                           Supprimer
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Supprimer votre compte ?</AlertDialogTitle>
+                          <AlertDialogTitle
+                            >Supprimer votre compte ?</AlertDialogTitle
+                          >
                           <AlertDialogDescription>
                             Cette action est irréversible. Toutes vos données,
                             inscriptions et préférences seront définitivement
@@ -851,11 +982,16 @@ function formatPrice(price: any) {
                         </AlertDialogHeader>
 
                         <Alert v-if="deleteForm.error" variant="destructive">
-                          <AlertDescription>{{ deleteForm.error }}</AlertDescription>
+                          <AlertDescription>{{
+                            deleteForm.error
+                          }}</AlertDescription>
                         </Alert>
 
                         <div class="space-y-2">
-                          <Label for="deletePassword" class="text-sm font-medium">
+                          <Label
+                            for="deletePassword"
+                            class="text-sm font-medium"
+                          >
                             Confirmez avec votre mot de passe
                           </Label>
                           <Input
@@ -871,7 +1007,9 @@ function formatPrice(price: any) {
                           <AlertDialogCancel>Annuler</AlertDialogCancel>
                           <Button
                             variant="destructive"
-                            :disabled="deleteForm.isLoading || !deleteForm.password"
+                            :disabled="
+                              deleteForm.isLoading || !deleteForm.password
+                            "
                             @click="handleDeleteAccount"
                           >
                             <Icon

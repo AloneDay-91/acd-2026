@@ -1,6 +1,7 @@
 import { render } from "@vue-email/render";
 import RegistrationConfirmationEmail from "../../emails/RegistrationConfirmationEmail.vue";
 import { sendMail } from "../../utils/mail";
+import { generateInvoicePdf } from "../../utils/generateInvoicePdf";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -27,18 +28,25 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // Generate order number: ACD-26-TROYES-XXXXX
-    const year = new Date().getFullYear().toString().slice(-2);
+    // Generate order number: PACD-XXXXX
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     const random = Array.from(
       { length: 8 },
       () => chars[Math.floor(Math.random() * chars.length)],
     ).join("");
-    const orderNumber = `ACD${year}TRYES-${random}`;
+    const orderNumber = `PACD-${random}`;
+
+    // Generate registration number: IACD-XXXXX
+    const regRandom = Array.from(
+      { length: 8 },
+      () => chars[Math.floor(Math.random() * chars.length)],
+    ).join("");
+    const registrationId = `IACD-${regRandom}`;
 
     // Create registration with related meals, activities, and order
     const registration = await prisma.registration.create({
       data: {
+        id: registrationId,
         firstName,
         lastName,
         email,
@@ -89,7 +97,7 @@ export default defineEventHandler(async (event) => {
       },
     });
 
-    // Send confirmation email (fire-and-forget)
+    // Send confirmation email with invoice PDF attachment (fire-and-forget)
     const appUrl = process.env.APP_URL || "http://localhost:3000";
     const emailMeals = registration.meals.map((m: any) => ({
       mealName: m.meal?.name || "",
@@ -101,20 +109,47 @@ export default defineEventHandler(async (event) => {
       (a: any) => a.activity?.name || "",
     );
 
-    render(RegistrationConfirmationEmail, {
-      firstName: registration.firstName,
-      lastName: registration.lastName,
-      orderNumber: registration.order?.orderNumber || orderNumber,
+    const [settings, iut] = await Promise.all([
+      prisma.setting.findUnique({ where: { id: "site_settings" } }),
+      registration.iutId
+        ? prisma.iut.findUnique({ where: { id: registration.iutId } })
+        : null,
+    ]);
+
+    const invoiceData = {
+      registration,
+      settings,
+      iutName: iut?.name ?? null,
       totalPrice: registration.totalPrice,
-      meals: emailMeals,
-      activities: emailActivities,
-      appUrl,
-    })
-      .then((html) =>
+      paymentStatus: registration.order?.paymentStatus || registration.status,
+      paymentMethod: registration.order?.paymentMethod || null,
+      paidAt: registration.order?.paidAt || null,
+    };
+
+    Promise.all([
+      render(RegistrationConfirmationEmail, {
+        firstName: registration.firstName,
+        lastName: registration.lastName,
+        orderNumber: registration.order?.orderNumber || orderNumber,
+        totalPrice: Number(registration.totalPrice),
+        meals: emailMeals,
+        activities: emailActivities,
+        appUrl,
+      }),
+      generateInvoicePdf(invoiceData),
+    ])
+      .then(([html, pdfBuffer]) =>
         sendMail(
           registration.email,
           `Confirmation d'inscription ACD - ${registration.order?.orderNumber || orderNumber}`,
           html,
+          [
+            {
+              filename: `Facture_${registration.order?.orderNumber || registration.id}.pdf`,
+              content: pdfBuffer,
+              contentType: "application/pdf",
+            },
+          ],
         ),
       )
       .catch(console.error);

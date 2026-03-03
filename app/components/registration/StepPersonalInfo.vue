@@ -18,6 +18,7 @@ const props = defineProps<{
     allergens: string;
     isMotorized: boolean;
   };
+  showErrors?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -31,17 +32,26 @@ const { data: iuts } = useLazyFetch<Iut[]>("/api/iuts");
 
 // Pre-fill from session if available
 onMounted(() => {
-  console.log("StepPersonalInfo monté");
-  const userData = session.value?.data?.user;
+  const userData = session.value?.data?.user as any;
   if (userData) {
-    const nameParts = (userData.name || "").split(" ");
     emit("update:modelValue", {
       ...props.modelValue,
-      firstName: nameParts[0] || props.modelValue.firstName,
-      lastName: nameParts.slice(1).join(" ") || props.modelValue.lastName,
+      firstName: userData.firstName || props.modelValue.firstName,
+      lastName: userData.lastName || props.modelValue.lastName,
       email: userData.email || props.modelValue.email,
+      phone: userData.tel || props.modelValue.phone,
     });
   }
+});
+
+// Le profil stocke l'IUT par nom, le formulaire attend un ID —
+// on résout le match une fois la liste des IUTs chargée
+watch(iuts, (loadedIuts) => {
+  if (!loadedIuts?.length) return;
+  const iutName = (session.value?.data?.user as any)?.iut;
+  if (!iutName || props.modelValue.iutId) return;
+  const match = loadedIuts.find((i) => i.name === iutName);
+  if (match) updateField("iutId", match.id);
 });
 
 function updateField(field: keyof typeof props.modelValue, value: any) {
@@ -52,37 +62,15 @@ const isMotorizedProxy = computed({
   get: () => props.modelValue.isMotorized,
   set: (val) => {
     updateField("isMotorized", val);
-    console.log("Statut motorisé modifié :", val);
   },
 });
 </script>
 
 <template>
-  <div class="space-y-8">
-    <!-- Header -->
-    <div class="space-y-2">
-      <div class="flex items-center gap-3">
-        <div
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10"
-        >
-          <Icon name="lucide:user" class="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <h2 class="text-2xl font-bold tracking-tight">
-            Informations personnelles
-          </h2>
-          <p class="text-sm text-muted-foreground">
-            Renseignez vos coordonnées pour l'inscription
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <Separator />
-
+  <div class="space-y-5">
     <!-- Identité -->
-    <div class="space-y-4">
-      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+    <div class="space-y-3">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         Identité
       </h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -93,8 +81,11 @@ const isMotorizedProxy = computed({
             :model-value="modelValue.firstName"
             @update:model-value="updateField('firstName', String($event))"
             placeholder="Jean"
-            required
+            :class="showErrors && !modelValue.firstName ? 'border-destructive focus-visible:ring-destructive' : ''"
           />
+          <FieldError v-if="showErrors && !modelValue.firstName">
+            Ce champ est obligatoire
+          </FieldError>
         </Field>
         <Field>
           <FieldLabel for="lastName">Nom *</FieldLabel>
@@ -103,21 +94,24 @@ const isMotorizedProxy = computed({
             :model-value="modelValue.lastName"
             @update:model-value="updateField('lastName', String($event))"
             placeholder="Dupont"
-            required
+            :class="showErrors && !modelValue.lastName ? 'border-destructive focus-visible:ring-destructive' : ''"
           />
+          <FieldError v-if="showErrors && !modelValue.lastName">
+            Ce champ est obligatoire
+          </FieldError>
         </Field>
       </div>
     </div>
 
     <!-- Coordonnées -->
-    <div class="space-y-4">
-      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+    <div class="space-y-3">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         Coordonnées
       </h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field>
           <FieldLabel for="email">Email *</FieldLabel>
-          <InputGroup>
+          <InputGroup :class="showErrors && !modelValue.email ? 'border-destructive ring-destructive' : ''">
             <InputGroupAddon>
               <Icon name="lucide:mail" class="size-4 text-muted-foreground" />
             </InputGroupAddon>
@@ -128,13 +122,15 @@ const isMotorizedProxy = computed({
               @update:model-value="updateField('email', String($event))"
               placeholder="jean.dupont@univ-reims.fr"
               class="border-0 shadow-none focus-visible:ring-0"
-              required
             />
           </InputGroup>
+          <FieldError v-if="showErrors && !modelValue.email">
+            Ce champ est obligatoire
+          </FieldError>
         </Field>
         <Field>
           <FieldLabel for="phone">Téléphone *</FieldLabel>
-          <InputGroup>
+          <InputGroup :class="showErrors && !modelValue.phone ? 'border-destructive ring-destructive' : ''">
             <InputGroupAddon>
               <Icon name="lucide:phone" class="size-4 text-muted-foreground" />
             </InputGroupAddon>
@@ -145,16 +141,18 @@ const isMotorizedProxy = computed({
               @update:model-value="updateField('phone', String($event))"
               placeholder="06 12 34 56 78"
               class="border-0 shadow-none focus-visible:ring-0"
-              required
             />
           </InputGroup>
+          <FieldError v-if="showErrors && !modelValue.phone">
+            Ce champ est obligatoire
+          </FieldError>
         </Field>
       </div>
     </div>
 
     <!-- Établissement -->
-    <div class="space-y-4">
-      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+    <div class="space-y-3">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         Établissement
       </h3>
       <Field>
@@ -164,7 +162,10 @@ const isMotorizedProxy = computed({
             :model-value="modelValue.iutId"
             @update:model-value="updateField('iutId', $event)"
           >
-            <SelectTrigger id="iut">
+            <SelectTrigger
+              id="iut"
+              :class="showErrors && !modelValue.iutId ? 'border-destructive focus:ring-destructive' : ''"
+            >
               <SelectValue placeholder="Sélectionnez votre IUT" />
             </SelectTrigger>
             <SelectContent>
@@ -180,12 +181,15 @@ const isMotorizedProxy = computed({
             <Skeleton class="h-10 w-full rounded-md" />
           </template>
         </ClientOnly>
+        <FieldError v-if="showErrors && !modelValue.iutId">
+          Veuillez sélectionner votre IUT
+        </FieldError>
       </Field>
     </div>
 
     <!-- Informations complémentaires -->
-    <div class="space-y-4">
-      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+    <div class="space-y-3">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         Informations complémentaires
       </h3>
 
@@ -210,22 +214,13 @@ const isMotorizedProxy = computed({
 
       <!-- Motorisé -->
       <div
-        class="flex items-center justify-between rounded-xl border bg-muted/30 p-5 transition-colors hover:bg-muted/50"
+        class="flex items-center justify-between rounded-lg border bg-muted/30 px-4 py-3 transition-colors hover:bg-muted/50"
       >
-        <div class="flex items-start gap-3">
-          <div
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background shadow-sm"
-          >
-            <Icon name="lucide:car" class="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div class="space-y-1">
-            <Label for="motorized" class="text-sm font-medium">
-              Êtes-vous motorisé ? *
-            </Label>
-            <p class="text-xs text-muted-foreground leading-relaxed">
-              Indiquez si vous disposez d'un véhicule pour vos déplacements
-            </p>
-          </div>
+        <div class="flex items-center gap-2.5">
+          <Icon name="lucide:car" class="h-4 w-4 text-muted-foreground shrink-0" />
+          <Label for="motorized" class="text-sm font-medium cursor-pointer">
+            Êtes-vous motorisé ?
+          </Label>
         </div>
         <Switch id="motorized" v-model="isMotorizedProxy" />
       </div>

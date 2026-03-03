@@ -1,0 +1,55 @@
+nom;date;type;prix;type_option;nom_option;allergènes
+Déjeuner Jour 1;2026-06-15;LUNCH;12.50;STARTER;Salade tomate-mozzarella;LAIT
+Déjeuner Jour 1;2026-06-15;LUNCH;12.50;STARTER;Œufs mayonnaise;OEUFS, MOUTARDE
+Déjeuner Jour 1;2026-06-15;LUNCH;12.50;STARTER;Soupe de carottes;CELERI
+Déjeuner Jour 1;2026-06-15;LUNCH;12.50;MAIN;Poulet rôti et purée;LAIT
+Déjeuner Jour 1;2026-06-15;LUNCH;12.50;MAIN;Pavé de saumon et riz;POISSON, LAIT
+Déjeuner Jour 1;2026-06-15;LUNCH;12.50;MAIN;Lasagnes végétariennes;GLUTEN, LAIT
+Déjeuner Jour 1;2026-06-15;LUNCH;12.50;DESSERT;Yaourt aux fruits;LAIT
+Déjeuner Jour 1;2026-06-15;LUNCH;12.50;DESSERT;Tarte au citron;GLUTEN, LAIT, OEUFS
+Déjeuner Jour 1;2026-06-15;LUNCH;12.50;DESSERT;Compote de pommes;
+Dîner Jour 1;2026-06-15;DINNER;12.50;STARTER;Quiche lorraine;GLUTEN, LAIT, OEUFS
+Dîner Jour 1;2026-06-15;DINNER;12.50;STARTER;Velouté de courge;LAIT, CELERI
+Dîner Jour 1;2026-06-15;DINNER;12.50;STARTER;Salade verte et noix;MOUTARDE, FRUITS A COQUE
+Dîner Jour 1;2026-06-15;DINNER;12.50;MAIN;Risotto aux champignons;LAIT, SULFITES
+Dîner Jour 1;2026-06-15;DINNER;12.50;MAIN;Steak et frites maison;
+Dîner Jour 1;2026-06-15;DINNER;12.50;MAIN;Cabillaud vapeur et haricots verts;POISSON
+Dîner Jour 1;2026-06-15;DINNER;12.50;DESSERT;Mousse au chocolat;OEUFS, LAIT, SOJA
+Dîner Jour 1;2026-06-15;DINNER;12.50;DESSERT;Salade de fruits frais;
+Dîner Jour 1;2026-06-15;DINNER;12.50;DESSERT;Crème caramel;LAIT, OEUFS
+Déjeuner Jour 2;2026-06-16;LUNCH;12.50;STARTER;Taboulé à la menthe;GLUTEN
+Déjeuner Jour 2;2026-06-16;LUNCH;12.50;STARTER;Avocat et crevettes;CRUSTACES, OEUFS, MOUTARDE
+Déjeuner Jour 2;2026-06-16;LUNCH;12.50;STARTER;Pâté en croûte;GLUTEN, LAIT, OEUFS, SULFITES
+Déjeuner Jour 2;2026-06-16;LUNCH;12.50;MAIN;Hachis Parmentier;LAIT, SULFITES
+Déjeuner Jour 2;2026-06-16;LUNCH;12.50;MAIN;Curry de pois chiches;FRUITS A COQUE
+Déjeuner Jour 2;2026-06-16;LUNCH;12.50;MAIN;Nouilles sautées au bœuf;GLUTEN, SOJA, SESAME
+Déjeuner Jour 2;2026-06-16;LUNCH;12.50;DESSERT;Île flottante;OEUFS, LAIT, FRUITS A COQUE
+Déjeuner Jour 2;2026-06-16;LUNCH;12.50;DESSERT;Brownie au chocolat;GLUTEN, LAIT, OEUFS, FRUITS A COQUE
+Déjeuner Jour 2;2026-06-16;LUNCH;12.50;DESSERT;Sorbet au citron;
+Dîner Jour 2;2026-06-16;DINNER;12.50;STARTER;Salade de chèvre chaud;GLUTEN, LAIT, MOUTARDE
+Dîner Jour 2;2026-06-16;DINNER;12.50;STARTER;Gaspacho andalou;GLUTEN, CELERI
+Dîner Jour 2;2026-06-16;DINNER;12.50;STARTER;Carpaccio de bœuf;LAIT
+Dîner Jour 2;2026-06-16;DINNER;12.50;MAIN;Pizza Margherita;GLUTEN, LAIT
+Dîner Jour 2;2026-06-16;DINNER;12.50;MAIN;Filet mignon à la moutarde;MOUTARDE, LAIT, SULFITES
+Dîner Jour 2;2026-06-16;DINNER;12.50;MAIN;Wok de crevettes;CRUSTACES, SOJA, SESAME
+Dîner Jour 2;2026-06-16;DINNER;12.50;DESSERT;Panna cotta coulis rouge;LAIT
+Dîner Jour 2;2026-06-16;DINNER;12.50;DESSERT;Tarte aux pommes;GLUTEN, LAIT, OEUFS
+Dîner Jour 2;2026-06-16;DINNER;12.50;DESSERT;Fondant au chocolat;GLUTEN, LAIT, OEUFS
+Déjeuner Jour 3;2026-06-17;LUNCH;12.50;STARTER;Melon et jambon cru;
+Déjeuner Jour 3;2026-06-17;LUNCH;12.50;STARTER;Salade César;GLUTEN, LAIT, OEUFS, POISSON, MOUTARDE
+Déjeuner Jour 3;2026-06-17;LUNCH;12.50;STARTER;Bruschetta à la tomate;GLUTEN
+Déjeuner Jour 3;2026-06-17;LUNCH;12.50;MAIN;Couscous au poulet;GLUTEN, CELERI
+Déjeuner Jour 3;2026-06-17;LUNCH;12.50;MAIN;Tartiflette;LAIT
+Déjeuner Jour 3;2026-06-17;LUNCH;12.50;MAIN;Dos de lieu noir et fondue de poireaux;POISSON, LAIT
+Déjeuner Jour 3;2026-06-17;LUNCH;12.50;DESSERT;Tiramisu;GLUTEN, LAIT, OEUFS
+Déjeuner Jour 3;2026-06-17;LUNCH;12.50;DESSERT;Clafoutis aux cerises;GLUTEN, LAIT, OEUFS
+Déjeuner Jour 3;2026-06-17;LUNCH;12.50;DESSERT;Riz au lait;LAIT
+Dîner Jour 3;2026-06-17;DINNER;12.50;STARTER;Champignons farcis;LAIT
+Dîner Jour 3;2026-06-17;DINNER;12.50;STARTER;Salade d'endives, roquefort et noix;LAIT, FRUITS A COQUE, MOUTARDE
+Dîner Jour 3;2026-06-17;DINNER;12.50;STARTER;Samoussas aux légumes;GLUTEN
+Dîner Jour 3;2026-06-17;DINNER;12.50;MAIN;Blanquette de veau;LAIT, CELERI, SULFITES
+Dîner Jour 3;2026-06-17;DINNER;12.50;MAIN;Chili con carne;
+Dîner Jour 3;2026-06-17;DINNER;12.50;MAIN;Gratin dauphinois et salade;LAIT, MOUTARDE
+Dîner Jour 3;2026-06-17;DINNER;12.50;DESSERT;Crumble aux fruits rouges;GLUTEN, LAIT
+Dîner Jour 3;2026-06-17;DINNER;12.50;DESSERT;Paris-Brest;GLUTEN, LAIT, OEUFS, FRUITS A COQUE
+Dîner Jour 3;2026-06-17;DINNER;12.50;DESSERT;Poire Belle Hélène;LAIT, SOJA
