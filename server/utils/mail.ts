@@ -6,11 +6,17 @@ const transporter = nodemailer.createTransport({
   secure: false,
 });
 
-export async function sendMail(to: string, subject: string, html: string) {
+export async function sendMail(
+  to: string,
+  subject: string,
+  html: string,
+  attachments?: nodemailer.SendMailOptions["attachments"],
+) {
   return transporter.sendMail({
     from: process.env.MAIL_FROM || "ACD <noreply@acd.local>",
     to,
     subject,
     html,
+    attachments,
   });
 }

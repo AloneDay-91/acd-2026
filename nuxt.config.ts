@@ -40,6 +40,7 @@ export default defineNuxtConfig({
     "@nuxt/test-utils",
     "shadcn-nuxt",
     "@nuxtjs/color-mode",
+    "motion-v/nuxt",
   ],
 
   shadcn: {

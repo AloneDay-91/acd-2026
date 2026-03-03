@@ -54,26 +54,22 @@ const shadowSize: [number, number] = [41, 41];
 <template>
   <div class="container mx-auto px-6 py-24 space-y-12">
     <!-- Hidden page state -->
-    <div
-      v-if="siteSettings && !siteSettings.showAcces"
-      class="text-center py-24 space-y-6"
-    >
-      <div
-        class="bg-muted/50 rounded-full h-20 w-20 flex items-center justify-center mx-auto"
-      >
-        <Icon
-          name="lucide:clock"
-          class="h-10 w-10 text-muted-foreground"
-        />
-      </div>
-      <h2 class="text-2xl font-bold tracking-tight">Bientôt disponible</h2>
-      <p class="text-muted-foreground max-w-md mx-auto">
-        Les informations d'accès seront bientôt disponibles. Revenez prochainement !
-      </p>
-      <Button variant="outline" class="rounded-full" as-child>
-        <NuxtLink to="/">Retour à l'accueil</NuxtLink>
-      </Button>
-    </div>
+    <Empty v-if="siteSettings && !siteSettings.showAcces" class="py-24">
+      <EmptyMedia variant="icon">
+        <Icon name="lucide:clock" class="size-5" />
+      </EmptyMedia>
+      <EmptyHeader>
+        <EmptyTitle>Bientôt disponible</EmptyTitle>
+        <EmptyDescription>
+          Les informations d'accès seront bientôt disponibles. Revenez prochainement !
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button variant="outline" class="rounded-full" as-child>
+          <NuxtLink to="/">Retour à l'accueil</NuxtLink>
+        </Button>
+      </EmptyContent>
+    </Empty>
 
     <template v-else>
     <!-- Header -->
@@ -211,26 +207,3 @@ const shadowSize: [number, number] = [41, 41];
   </div>
 </template>
 
-<style>
-/* Ensure map container has height */
-.leaflet-container {
-  height: 100%;
-  width: 100%;
-  z-index: 0;
-  font-family: inherit;
-}
-
-/* Dark mode overrides for Leaflet controls */
-.dark .leaflet-control-zoom a,
-.dark .leaflet-control-attribution {
-  background-color: hsl(var(--card)) !important;
-  color: hsl(var(--foreground)) !important;
-  border-color: hsl(var(--border)) !important;
-}
-.dark .leaflet-control-zoom a:hover {
-  background-color: hsl(var(--muted)) !important;
-}
-.dark .leaflet-bar a {
-  border-bottom: 1px solid hsl(var(--border)) !important;
-}
-</style>

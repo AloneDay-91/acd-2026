@@ -24,12 +24,12 @@ async function handleGithubSignIn() {
           <img
             src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
             alt="ACD Logo"
-            class="h-12 dark:hidden"
+            class="h-16 dark:hidden"
           />
           <img
             src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
             alt="ACD Logo"
-            class="h-12 hidden dark:block dark:grayscale dark:contrast-1"
+            class="h-16 hidden dark:block dark:grayscale dark:invert dark:contrast-200"
           />
         </div>
         <h1 class="text-3xl font-bold tracking-tight">Créer un compte</h1>

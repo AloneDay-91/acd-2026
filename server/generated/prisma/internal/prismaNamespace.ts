@@ -2134,6 +2134,11 @@ export const SettingScalarFieldEnum = {
   showAcces: 'showAcces',
   showHotels: 'showHotels',
   headerBadgeText: 'headerBadgeText',
+  siteName: 'siteName',
+  eventDate: 'eventDate',
+  eventEndDate: 'eventEndDate',
+  location: 'location',
+  locationAddress: 'locationAddress',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

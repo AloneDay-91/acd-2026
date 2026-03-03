@@ -10,8 +10,9 @@ interface Activity {
 }
 
 const props = defineProps<{
-  modelValue: string[]; // Array of activity IDs
+  modelValue: string[];
   activitiesData?: Activity[] | null;
+  showErrors?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -56,42 +57,24 @@ function formatDate(dateStr: string) {
 </script>
 
 <template>
-  <div class="space-y-8">
-    <!-- Header -->
-    <div class="space-y-2">
-      <div class="flex items-center gap-3">
-        <div
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10"
-        >
-          <Icon name="lucide:activity" class="h-5 w-5 text-primary" />
-        </div>
-        <div class="flex-1">
-          <div class="flex items-center gap-2">
-            <h2 class="text-2xl font-bold tracking-tight">
-              Choix des activités
-            </h2>
-            <Badge
-              v-if="modelValue.length > 0"
-              variant="secondary"
-              class="tabular-nums"
-            >
-              {{ modelValue.length }} sélectionnée{{
-                modelValue.length > 1 ? "s" : ""
-              }}
-            </Badge>
-          </div>
-          <p class="text-sm text-muted-foreground">
-            Sélectionnez les activités auxquelles vous souhaitez participer
-            (optionnel)
-          </p>
-        </div>
-      </div>
+  <div class="space-y-5">
+    <!-- Header compact -->
+    <div class="flex items-center justify-between">
+      <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        Activités *
+      </p>
+      <Badge v-if="modelValue.length > 0" variant="secondary" class="tabular-nums text-xs">
+        {{ modelValue.length }} sélectionnée{{ modelValue.length > 1 ? "s" : "" }}
+      </Badge>
     </div>
 
-    <Separator />
+    <!-- Error -->
+    <p v-if="showErrors && modelValue.length === 0" class="text-sm text-destructive">
+      Veuillez sélectionner au moins une activité
+    </p>
 
     <!-- Loading -->
-    <div v-if="isLoading" class="grid gap-4 sm:grid-cols-2">
+    <div v-if="isLoading" class="grid gap-3 sm:grid-cols-2">
       <Skeleton v-for="i in 4" :key="i" class="h-32 w-full rounded-xl" />
     </div>
 
@@ -118,7 +101,7 @@ function formatDate(dateStr: string) {
       </Card>
 
       <!-- Activities list -->
-      <div v-else class="grid gap-4 sm:grid-cols-2">
+      <div v-else class="grid gap-3 sm:grid-cols-2">
         <Label
           v-for="activity in activities"
           :key="activity.id"

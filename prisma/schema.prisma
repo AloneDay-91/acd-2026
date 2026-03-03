@@ -255,6 +255,11 @@ model Setting {
   showAcces        Boolean  @default(true)
   showHotels       Boolean  @default(true)
   headerBadgeText  String   @default("Édition 2026")
+  siteName         String   @default("ACD MMI 2026")
+  eventDate        DateTime @default("2026-06-18T00:00:00.000Z")
+  eventEndDate     DateTime @default("2026-06-19T00:00:00.000Z")
+  location         String   @default("IUT de Troyes")
+  locationAddress  String   @default("9 Rue de Québec, 10000 Troyes")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
