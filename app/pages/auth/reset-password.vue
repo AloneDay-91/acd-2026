@@ -78,14 +78,14 @@ async function handleResetPassword() {
       <div class="text-center space-y-2">
         <div class="flex items-center justify-center gap-2">
           <img
-            src="/LightLogoACD.svg"
+            src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
             alt="ACD Logo"
-            class="h-10 dark:hidden"
+            class="h-16 dark:hidden"
           />
           <img
-            src="/DarkLogoACD.svg"
+            src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
             alt="ACD Logo"
-            class="h-10 hidden dark:block"
+            class="h-16 hidden dark:block dark:grayscale dark:invert dark:contrast-200"
           />
         </div>
         <h1 class="text-3xl font-bold tracking-tight">
@@ -192,9 +192,7 @@ async function handleResetPassword() {
                 <Icon name="lucide:check" class="size-6 text-green-500" />
               </div>
               <div class="space-y-2">
-                <h2 class="text-xl font-semibold">
-                  Mot de passe modifié
-                </h2>
+                <h2 class="text-xl font-semibold">Mot de passe modifié</h2>
                 <p class="text-muted-foreground text-sm">
                   Votre mot de passe a été réinitialisé avec succès. Vous pouvez
                   maintenant vous connecter.
@@ -216,7 +214,9 @@ async function handleResetPassword() {
                 </Alert>
 
                 <Field>
-                  <FieldLabel for="new-password">Nouveau mot de passe</FieldLabel>
+                  <FieldLabel for="new-password"
+                    >Nouveau mot de passe</FieldLabel
+                  >
                   <InputGroup>
                     <InputGroupAddon>
                       <Icon

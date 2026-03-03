@@ -37,6 +37,7 @@ const filteredMeals = computed(() => {
 // Dialog states
 const isFormDialogOpen = ref(false);
 const isDeleteDialogOpen = ref(false);
+const isImportDialogOpen = ref(false);
 const selectedMeal = ref<MealData | null>(null);
 
 function openCreateDialog() {
@@ -67,10 +68,16 @@ function handleSuccess() {
         <h1 class="text-2xl font-bold tracking-tight">Repas</h1>
         <p class="text-muted-foreground">Gestion des repas de l'événement</p>
       </div>
-      <Button class="rounded-full" @click="openCreateDialog">
-        <Icon name="lucide:plus" class="h-4 w-4" />
-        Ajouter un repas
-      </Button>
+      <div class="flex items-center gap-2">
+        <Button variant="outline" class="rounded-full" @click="isImportDialogOpen = true">
+          <Icon name="lucide:upload" class="h-4 w-4" />
+          Importer CSV
+        </Button>
+        <Button class="rounded-full" @click="openCreateDialog">
+          <Icon name="lucide:plus" class="h-4 w-4" />
+          Ajouter un repas
+        </Button>
+      </div>
     </div>
 
     <!-- Search -->
@@ -118,6 +125,12 @@ function handleSuccess() {
     <RepasDeleteDialog
       v-model:open="isDeleteDialogOpen"
       :meal="selectedMeal"
+      @success="handleSuccess"
+    />
+
+    <!-- Import Dialog -->
+    <RepasImportDialog
+      v-model:open="isImportDialogOpen"
       @success="handleSuccess"
     />
   </div>
