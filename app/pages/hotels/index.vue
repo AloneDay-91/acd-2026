@@ -44,26 +44,22 @@ function clearSelection() {
 <template>
   <div class="container mx-auto px-6 py-24 space-y-12">
     <!-- Hidden page state -->
-    <div
-      v-if="siteSettings && !siteSettings.showHotels"
-      class="text-center py-24 space-y-6"
-    >
-      <div
-        class="bg-muted/50 rounded-full h-20 w-20 flex items-center justify-center mx-auto"
-      >
-        <Icon
-          name="lucide:clock"
-          class="h-10 w-10 text-muted-foreground"
-        />
-      </div>
-      <h2 class="text-2xl font-bold tracking-tight">Bientôt disponible</h2>
-      <p class="text-muted-foreground max-w-md mx-auto">
-        Les informations sur les hébergements seront bientôt disponibles. Revenez prochainement !
-      </p>
-      <Button variant="outline" class="rounded-full" as-child>
-        <NuxtLink to="/">Retour à l'accueil</NuxtLink>
-      </Button>
-    </div>
+    <Empty v-if="siteSettings && !siteSettings.showHotels" class="py-24">
+      <EmptyMedia variant="icon">
+        <Icon name="lucide:clock" class="size-5" />
+      </EmptyMedia>
+      <EmptyHeader>
+        <EmptyTitle>Bientôt disponible</EmptyTitle>
+        <EmptyDescription>
+          Les informations sur les hébergements seront bientôt disponibles. Revenez prochainement !
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button variant="outline" class="rounded-full" as-child>
+          <NuxtLink to="/">Retour à l'accueil</NuxtLink>
+        </Button>
+      </EmptyContent>
+    </Empty>
 
     <template v-else>
     <!-- Header -->
@@ -101,23 +97,17 @@ function clearSelection() {
         </Button>
 
         <!-- Empty state -->
-        <div
-          v-if="!hotels || hotels.length === 0"
-          class="text-center py-12 space-y-4"
-        >
-          <div
-            class="bg-muted/50 rounded-full h-20 w-20 flex items-center justify-center mx-auto"
-          >
-            <Icon
-              name="lucide:building-2"
-              class="h-10 w-10 text-muted-foreground"
-            />
-          </div>
-          <h3 class="text-lg font-medium">Aucun hôtel disponible</h3>
-          <p class="text-muted-foreground">
-            Les informations sur les hébergements seront bientôt disponibles.
-          </p>
-        </div>
+        <Empty v-if="!hotels || hotels.length === 0">
+          <EmptyMedia variant="icon">
+            <Icon name="lucide:building-2" class="size-5" />
+          </EmptyMedia>
+          <EmptyHeader>
+            <EmptyTitle>Aucun hôtel disponible</EmptyTitle>
+            <EmptyDescription>
+              Les informations sur les hébergements seront bientôt disponibles.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
 
         <!-- Hotel cards -->
         <Card

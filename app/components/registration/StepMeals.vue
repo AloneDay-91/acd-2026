@@ -26,7 +26,19 @@ interface SelectedMeal {
 const props = defineProps<{
   modelValue: SelectedMeal[];
   mealsData?: Meal[] | null;
+  showErrors?: boolean;
 }>();
+
+function isMealOptionMissing(mealId: string, optionType: "STARTER" | "MAIN" | "DESSERT"): boolean {
+  if (!props.showErrors) return false;
+  const meal = meals.value.find((m) => m.id === mealId);
+  if (!meal) return false;
+  const hasType = getOptionsByType(meal, optionType).length > 0;
+  if (!hasType) return false;
+  const sm = getSelectedMeal(mealId);
+  const key = optionType === "STARTER" ? "starterOptionId" : optionType === "MAIN" ? "mainOptionId" : "dessertOptionId";
+  return !sm?.[key];
+}
 
 const emit = defineEmits<{
   "update:modelValue": [value: SelectedMeal[]];
@@ -104,45 +116,28 @@ function getMealTypeIcon(type: string) {
   return type === "LUNCH" ? "lucide:sun" : "lucide:moon";
 }
 
-function formatAllergens(allergens: string[]): string {
-  return allergens.join(", ");
-}
-
 const totalSelected = computed(() => props.modelValue.length);
 </script>
 
 <template>
-  <div class="space-y-8">
-    <!-- Header -->
-    <div class="space-y-2">
-      <div class="flex items-center gap-3">
-        <div
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10"
-        >
-          <Icon name="lucide:utensils" class="h-5 w-5 text-primary" />
-        </div>
-        <div class="flex-1">
-          <div class="flex items-center gap-2">
-            <h2 class="text-2xl font-bold tracking-tight">Choix des repas</h2>
-            <Badge
-              v-if="totalSelected > 0"
-              variant="secondary"
-              class="tabular-nums"
-            >
-              {{ totalSelected }} sélectionné{{ totalSelected > 1 ? "s" : "" }}
-            </Badge>
-          </div>
-          <p class="text-sm text-muted-foreground">
-            Sélectionnez les repas et choisissez vos options
-          </p>
-        </div>
-      </div>
+  <div class="space-y-5">
+    <!-- Header compact -->
+    <div class="flex items-center justify-between">
+      <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        Sélectionnez vos repas *
+      </p>
+      <Badge v-if="totalSelected > 0" variant="secondary" class="tabular-nums text-xs">
+        {{ totalSelected }} sélectionné{{ totalSelected > 1 ? "s" : "" }}
+      </Badge>
     </div>
 
-    <Separator />
+    <p v-if="showErrors && totalSelected === 0" class="text-sm text-destructive flex items-center gap-1.5">
+      <Icon name="lucide:circle-alert" class="h-3.5 w-3.5 shrink-0" />
+      Veuillez sélectionner au moins un repas
+    </p>
 
     <!-- Loading -->
-    <div v-if="isLoading" class="space-y-4">
+    <div v-if="isLoading" class="space-y-3">
       <Skeleton v-for="i in 3" :key="i" class="h-40 w-full rounded-xl" />
     </div>
 
@@ -244,14 +239,16 @@ const totalSelected = computed(() => props.modelValue.length);
               <!-- Allergens -->
               <div
                 v-if="getAllAllergens(meal).length"
-                class="flex items-center gap-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 px-2.5 py-1.5 w-fit"
+                class="flex flex-wrap gap-1"
               >
-                <Icon
-                  name="lucide:alert-triangle"
-                  class="h-3.5 w-3.5 text-amber-500"
-                />
-                <span class="text-xs text-amber-700 dark:text-amber-400">
-                  {{ formatAllergens(getAllAllergens(meal)) }}
+                <span
+                  v-for="allergen in getAllAllergens(meal)"
+                  :key="allergen"
+                  class="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs font-medium"
+                  :class="getAllergenInfo(allergen).badgeClass"
+                >
+                  <Icon :name="getAllergenInfo(allergen).icon" class="h-3 w-3 shrink-0" />
+                  {{ getAllergenInfo(allergen).label }}
                 </span>
               </div>
             </div>
@@ -314,21 +311,25 @@ const totalSelected = computed(() => props.modelValue.length);
                       </Label>
                       <div
                         v-if="option.hasAllergens && option.allergens?.length"
-                        class="flex items-center gap-1"
+                        class="flex flex-wrap gap-1 mt-0.5"
                       >
-                        <Icon
-                          name="lucide:alert-triangle"
-                          class="h-3 w-3 text-amber-500"
-                        />
                         <span
-                          class="text-xs text-amber-600 dark:text-amber-400"
+                          v-for="allergen in option.allergens"
+                          :key="allergen"
+                          class="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs font-medium"
+                          :class="getAllergenInfo(allergen).badgeClass"
                         >
-                          {{ formatAllergens(option.allergens) }}
+                          <Icon :name="getAllergenInfo(allergen).icon" class="h-3 w-3 shrink-0" />
+                          {{ getAllergenInfo(allergen).label }}
                         </span>
                       </div>
                     </div>
                   </div>
                 </RadioGroup>
+                <p v-if="isMealOptionMissing(meal.id, 'STARTER')" class="text-xs text-destructive flex items-center gap-1">
+                  <Icon name="lucide:circle-alert" class="h-3 w-3 shrink-0" />
+                  Veuillez choisir une entrée
+                </p>
               </div>
 
               <!-- Main courses -->
@@ -373,21 +374,25 @@ const totalSelected = computed(() => props.modelValue.length);
                       </Label>
                       <div
                         v-if="option.hasAllergens && option.allergens?.length"
-                        class="flex items-center gap-1"
+                        class="flex flex-wrap gap-1 mt-0.5"
                       >
-                        <Icon
-                          name="lucide:alert-triangle"
-                          class="h-3 w-3 text-amber-500"
-                        />
                         <span
-                          class="text-xs text-amber-600 dark:text-amber-400"
+                          v-for="allergen in option.allergens"
+                          :key="allergen"
+                          class="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs font-medium"
+                          :class="getAllergenInfo(allergen).badgeClass"
                         >
-                          {{ formatAllergens(option.allergens) }}
+                          <Icon :name="getAllergenInfo(allergen).icon" class="h-3 w-3 shrink-0" />
+                          {{ getAllergenInfo(allergen).label }}
                         </span>
                       </div>
                     </div>
                   </div>
                 </RadioGroup>
+                <p v-if="isMealOptionMissing(meal.id, 'MAIN')" class="text-xs text-destructive flex items-center gap-1">
+                  <Icon name="lucide:circle-alert" class="h-3 w-3 shrink-0" />
+                  Veuillez choisir un plat principal
+                </p>
               </div>
 
               <!-- Desserts -->
@@ -432,21 +437,25 @@ const totalSelected = computed(() => props.modelValue.length);
                       </Label>
                       <div
                         v-if="option.hasAllergens && option.allergens?.length"
-                        class="flex items-center gap-1"
+                        class="flex flex-wrap gap-1 mt-0.5"
                       >
-                        <Icon
-                          name="lucide:alert-triangle"
-                          class="h-3 w-3 text-amber-500"
-                        />
                         <span
-                          class="text-xs text-amber-600 dark:text-amber-400"
+                          v-for="allergen in option.allergens"
+                          :key="allergen"
+                          class="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs font-medium"
+                          :class="getAllergenInfo(allergen).badgeClass"
                         >
-                          {{ formatAllergens(option.allergens) }}
+                          <Icon :name="getAllergenInfo(allergen).icon" class="h-3 w-3 shrink-0" />
+                          {{ getAllergenInfo(allergen).label }}
                         </span>
                       </div>
                     </div>
                   </div>
                 </RadioGroup>
+                <p v-if="isMealOptionMissing(meal.id, 'DESSERT')" class="text-xs text-destructive flex items-center gap-1">
+                  <Icon name="lucide:circle-alert" class="h-3 w-3 shrink-0" />
+                  Veuillez choisir un dessert
+                </p>
               </div>
 
               <!-- No options message -->

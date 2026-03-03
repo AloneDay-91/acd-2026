@@ -92,7 +92,7 @@ function isActive(href: string) {
                   <img
                     src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                     alt="ACD Logo"
-                    class="h-14 hidden dark:block dark:grayscale dark:contrast-1"
+                    class="h-14 hidden dark:block dark:grayscale dark:invert dark:contrast-200"
                   />
                 </div>
               </NuxtLink>
@@ -204,7 +204,7 @@ function isActive(href: string) {
               <DropdownMenuContent
                 align="end"
                 side="top"
-                class="w-56 rounded-xl"
+                class="w-56 rounded-md"
               >
                 <DropdownMenuLabel class="font-normal">
                   <div class="flex flex-col space-y-1">

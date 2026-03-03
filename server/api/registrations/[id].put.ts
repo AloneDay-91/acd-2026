@@ -25,6 +25,8 @@ export default defineEventHandler(async (event) => {
       lastName: body.lastName,
       email: body.email,
       phone: body.phone,
+      allergens: body.allergens,
+      isMotorized: body.isMotorized,
       status: body.status,
       totalPrice: body.totalPrice,
     },

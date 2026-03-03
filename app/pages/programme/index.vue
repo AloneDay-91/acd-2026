@@ -69,26 +69,22 @@ function formatDateShort(dateStr: string) {
 <template>
   <div class="container mx-auto px-6 py-24 space-y-12">
     <!-- Hidden page state -->
-    <div
-      v-if="siteSettings && !siteSettings.showProgramme"
-      class="text-center py-24 space-y-6"
-    >
-      <div
-        class="bg-muted/50 rounded-full h-20 w-20 flex items-center justify-center mx-auto"
-      >
-        <Icon
-          name="lucide:clock"
-          class="h-10 w-10 text-muted-foreground"
-        />
-      </div>
-      <h2 class="text-2xl font-bold tracking-tight">Bientôt disponible</h2>
-      <p class="text-muted-foreground max-w-md mx-auto">
-        Le programme de l'événement sera bientôt disponible. Revenez prochainement !
-      </p>
-      <Button variant="outline" class="rounded-full" as-child>
-        <NuxtLink to="/">Retour à l'accueil</NuxtLink>
-      </Button>
-    </div>
+    <Empty v-if="siteSettings && !siteSettings.showProgramme" class="py-24">
+      <EmptyMedia variant="icon">
+        <Icon name="lucide:clock" class="size-5" />
+      </EmptyMedia>
+      <EmptyHeader>
+        <EmptyTitle>Bientôt disponible</EmptyTitle>
+        <EmptyDescription>
+          Le programme de l'événement sera bientôt disponible. Revenez prochainement !
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button variant="outline" class="rounded-full" as-child>
+          <NuxtLink to="/">Retour à l'accueil</NuxtLink>
+        </Button>
+      </EmptyContent>
+    </Empty>
 
     <template v-else>
     <!-- Header -->
@@ -109,24 +105,18 @@ function formatDateShort(dateStr: string) {
     </div>
 
     <!-- Empty state -->
-    <div
-      v-else-if="!events || events.length === 0"
-      class="text-center py-16 space-y-4"
-    >
-      <div
-        class="bg-muted/50 rounded-full h-20 w-20 flex items-center justify-center mx-auto"
-      >
-        <Icon
-          name="lucide:calendar-x"
-          class="h-10 w-10 text-muted-foreground"
-        />
-      </div>
-      <h3 class="text-lg font-medium">Programme à venir</h3>
-      <p class="text-muted-foreground max-w-md mx-auto">
-        Le programme détaillé de l'événement sera bientôt disponible. Revenez
-        prochainement pour découvrir les activités prévues.
-      </p>
-    </div>
+    <Empty v-else-if="!events || events.length === 0">
+      <EmptyMedia variant="icon">
+        <Icon name="lucide:calendar-x" class="size-5" />
+      </EmptyMedia>
+      <EmptyHeader>
+        <EmptyTitle>Programme à venir</EmptyTitle>
+        <EmptyDescription>
+          Le programme détaillé de l'événement sera bientôt disponible. Revenez
+          prochainement pour découvrir les activités prévues.
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>
 
     <!-- Programme content -->
     <div v-else class="max-w-4xl mx-auto space-y-12">
