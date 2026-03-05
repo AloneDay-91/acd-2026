@@ -1,6 +1,6 @@
 {
   "name": "acd-nuxt",
-  "version": "0..NaN",
+  "version": "1.0.1",
   "type": "module",
   "private": true,
   "scripts": {
