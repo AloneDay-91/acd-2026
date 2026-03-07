@@ -1,76 +1,90 @@
 services:
+  # REVERSE PROXY (Gère le HTTPS et les ports 80/443)
+  caddy:
+    image: caddy:2-alpine
+    container_name: acd-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    deploy:
+      resources:
+        limits:
+          memory: 80M # Très léger
+    depends_on:
+      - app
+
+  # TON APP NUXT 4
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: acd-app
     restart: unless-stopped
-    ports:
-      - "3000:3000"
+    # Plus besoin d'exposer le port 3001 au public, Caddy s'en occupe en interne
+    expose:
+      - "3000"
     environment:
-      DATABASE_URL: postgres://admin:password@postgresql:5432/acd_db
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
       GOTENBERG_URL: http://gotenberg:3000
-      SMTP_HOST: mailpit
-      SMTP_PORT: 1025
-      MAIL_FROM: ${MAIL_FROM:-ACD <noreply@acd.local>}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      MAIL_FROM: ${MAIL_FROM}
     depends_on:
       postgresql:
         condition: service_healthy
-      gotenberg:
-        condition: service_started
-      mailpit:
-        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
+  # BASE DE DONNÉES
   postgresql:
     image: postgres:16-alpine
     container_name: acd-postgresql
     restart: unless-stopped
-    ports:
-      - "5432:5432"
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: acd_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgresql_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d acd_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 150M # Réduit un peu pour laisser de la place au reste
 
-  adminer:
-    image: adminer:latest
-    container_name: acd-adminer
-    restart: unless-stopped
-    ports:
-      - "8081:8080"
-    environment:
-      ADMINER_DEFAULT_SERVER: postgresql
-    depends_on:
-      - postgresql
-
-  mailpit:
-    image: axllent/mailpit:latest
-    container_name: acd-mailpit
-    restart: unless-stopped
-    ports:
-      - "8025:8025" # Web UI
-      - "1025:1025" # SMTP
-    environment:
-      MP_SMTP_AUTH_ACCEPT_ANY: 1
-      MP_SMTP_AUTH_ALLOW_INSECURE: 1
-
+  # GÉNÉRATEUR PDF
   gotenberg:
     image: gotenberg/gotenberg:8
     container_name: acd-gotenberg
     restart: unless-stopped
-    ports:
-      - "3001:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 350M
 
 volumes:
   postgresql_data:
+  caddy_data:
+  caddy_config:
