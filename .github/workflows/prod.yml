@@ -1,8 +1,8 @@
-name: Preprod Deploy
+name: Prod Deploy
 
 on:
   push:
-    branches: [preprod]
+    branches: [main]
 
 jobs:
   build:
@@ -35,11 +35,12 @@ jobs:
             package.json \
             package-lock.json \
             docker-compose.yml \
-            ecosystem.config.cjs
+            Caddyfile \
+            Dockerfile
 
       - uses: actions/upload-artifact@v4
         with:
-          name: preprod-build
+          name: prod-build
           path: app.tar.gz
 
   deploy:
@@ -49,7 +50,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: preprod-build
+          name: prod-build
 
       - name: Copy artifact to server
         uses: appleboy/scp-action@v0.1.7
@@ -58,9 +59,9 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "app.tar.gz"
-          target: "/var/www/acd-preprod/"
+          target: "/var/www/acd-prod/"
 
-      - name: Deploy and restart PM2
+      - name: Deploy via Docker
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -68,18 +69,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-
-            PM2="/home/festival-deployer/.nvm/versions/node/v20.20.0/bin/pm2"
-
-            cd /var/www/acd-preprod
-
-            rm -rf .output prisma package.json package-lock.json ecosystem.config.cjs
+            cd /var/www/acd-prod
 
             tar -xzf app.tar.gz
             rm app.tar.gz
 
-            $PM2 delete acd-preprod || true
-            $PM2 start ecosystem.config.cjs --force
-            $PM2 save
-
-            docker compose up -d postgresql adminer mailpit gotenberg
+            docker compose up -d --build
+            docker image prune -f

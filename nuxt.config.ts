@@ -3,8 +3,10 @@
 import tailwindcss from "@tailwindcss/vite";
 import vue from "@vitejs/plugin-vue";
 import { defineNuxtConfig } from "nuxt/config";
+import { version } from "./package.json";
 
 export default defineNuxtConfig({
+  appConfig: { version },
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
@@ -19,7 +21,7 @@ export default defineNuxtConfig({
 
   nitro: {
     rollupConfig: {
-      plugins: [vue()],
+      plugins: [vue() as any],
     },
   },
 
@@ -30,10 +32,8 @@ export default defineNuxtConfig({
 
   modules: [
     "@nuxt/a11y",
-    "@nuxt/content",
     "@nuxt/eslint",
     "@nuxt/fonts",
-    "@nuxt/hints",
     "@nuxt/icon",
     "@nuxt/image",
     "@nuxt/scripts",
