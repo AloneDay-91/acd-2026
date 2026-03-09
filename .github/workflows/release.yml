@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
@@ -13,16 +13,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Create GitHub Release
+      - name: Generate changelog and create release
         uses: actions/github-script@v7
         with:
           script: |
+            const { execSync } = require('child_process');
             const tag = context.ref.replace('refs/tags/', '');
+
+            // Trouver le tag précédent
+            let previousTag = '';
+            try {
+              previousTag = execSync(`git describe --tags --abbrev=0 ${tag}^`).toString().trim();
+            } catch (e) {
+              // Premier tag, on prend tous les commits
+              previousTag = execSync('git rev-list --max-parents=0 HEAD').toString().trim();
+            }
+
+            // Récupérer les commits entre les deux tags (exclure les "chore: bump")
+            const log = execSync(
+              `git log ${previousTag}..${tag} --pretty=format:"- %s (%h)" --no-merges`
+            ).toString().trim();
+
+            const commits = log
+              .split('\n')
+              .filter(line => !line.includes('chore: bump version'))
+              .join('\n');
+
+            const body = commits
+              ? `## What's Changed\n\n${commits}\n\n**Full Changelog**: https://github.com/${context.repo.owner}/${context.repo.repo}/compare/${previousTag}...${tag}`
+              : `**Full Changelog**: https://github.com/${context.repo.owner}/${context.repo.repo}/compare/${previousTag}...${tag}`;
+
             await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: tag,
               name: tag,
-              generate_release_notes: true,
+              body: body,
             });
