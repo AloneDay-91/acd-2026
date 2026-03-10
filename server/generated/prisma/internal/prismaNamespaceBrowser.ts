@@ -288,6 +288,7 @@ export const SettingScalarFieldEnum = {
   eventEndDate: 'eventEndDate',
   location: 'location',
   locationAddress: 'locationAddress',
+  notificationEmails: 'notificationEmails',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

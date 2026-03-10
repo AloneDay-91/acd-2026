@@ -1,5 +1,6 @@
 import { render } from "@vue-email/render";
 import RegistrationConfirmationEmail from "../../emails/RegistrationConfirmationEmail.vue";
+import NewRegistrationNotifEmail from "../../emails/NewRegistrationNotifEmail.vue";
 import { sendMail } from "../../utils/mail";
 import { generateInvoicePdf } from "../../utils/generateInvoicePdf";
 
@@ -126,11 +127,14 @@ export default defineEventHandler(async (event) => {
       paidAt: registration.order?.paidAt || null,
     };
 
+    const finalOrderNumber = registration.order?.orderNumber || orderNumber;
+
+    // Send confirmation email to the registrant
     Promise.all([
       render(RegistrationConfirmationEmail, {
         firstName: registration.firstName,
         lastName: registration.lastName,
-        orderNumber: registration.order?.orderNumber || orderNumber,
+        orderNumber: finalOrderNumber,
         registrationId: registration.id,
         totalPrice: Number(registration.totalPrice),
         meals: emailMeals,
@@ -142,11 +146,11 @@ export default defineEventHandler(async (event) => {
       .then(([html, pdfBuffer]) =>
         sendMail(
           registration.email,
-          `Confirmation d'inscription ACD - ${registration.order?.orderNumber || orderNumber}`,
+          `Confirmation d'inscription ACD - ${finalOrderNumber}`,
           html,
           [
             {
-              filename: `Facture_${registration.order?.orderNumber || registration.id}.pdf`,
+              filename: `Facture_${finalOrderNumber}.pdf`,
               content: pdfBuffer,
               contentType: "application/pdf",
             },
@@ -154,6 +158,28 @@ export default defineEventHandler(async (event) => {
         ),
       )
       .catch(console.error);
+
+    // Send notification email to configured admin recipients
+    const notificationEmails = settings?.notificationEmails ?? [];
+    if (notificationEmails.length > 0) {
+      render(NewRegistrationNotifEmail, {
+        firstName: registration.firstName,
+        lastName: registration.lastName,
+        email: registration.email,
+        registrationId: registration.id,
+        orderNumber: finalOrderNumber,
+        totalPrice: Number(registration.totalPrice),
+        appUrl,
+      })
+        .then((html) =>
+          sendMail(
+            notificationEmails.join(", "),
+            `Nouvelle inscription ACD - ${registration.firstName} ${registration.lastName}`,
+            html,
+          ),
+        )
+        .catch(console.error);
+    }
 
     return registration;
   } catch (error: any) {
