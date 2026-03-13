@@ -5,6 +5,7 @@ import {
   Container,
   Section,
   Text,
+  Button,
   Preview,
   Tailwind,
   Img,
@@ -37,24 +38,12 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
   <Html lang="fr">
     <Preview>Nouvelle inscription ACD — {{ firstName }} {{ lastName }}</Preview>
     <Tailwind :config="tailwindConfig">
-      <Body
-        style="
-          background-color: #f6f9fc;
-          font-family: &quot;Inter&quot;, system-ui, sans-serif;
-          margin: 0;
-          padding: 40px 0;
-        "
-      >
-        <Container style="max-width: 560px; margin: 0 auto">
+      <Body class="bg-background py-10 font-sans">
+        <Container class="max-w-xl mx-auto">
           <!-- HEADER -->
           <Section
-            style="
-              background: #ffffff;
-              padding: 36px 48px 28px;
-              border: 1px solid #e5e7eb;
-              border-radius: 16px 16px 0 0;
-              border-bottom: none;
-            "
+            class="bg-white px-10 pt-8 pb-6 rounded-t-2xl"
+            style="border: 1px solid #e4e4e4; border-bottom: none"
           >
             <Row>
               <Column>
@@ -63,31 +52,26 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
                   alt="ACD Logo"
                   width="90"
                   height="36"
-                  style="object-fit: contain; display: block"
+                  class="block"
                 />
               </Column>
               <Column align="right" style="vertical-align: top">
                 <Text
+                  class="text-foreground m-0 mb-1"
                   style="
-                    font-size: 22px;
+                    font-size: 20px;
                     font-weight: 300;
                     letter-spacing: 0.06em;
                     text-transform: uppercase;
-                    color: #111827;
-                    margin: 0 0 4px 0;
-                    line-height: 1.2;
                     text-align: right;
+                    line-height: 1.2;
                   "
                 >
                   Notification
                 </Text>
                 <Text
-                  style="
-                    font-size: 12px;
-                    color: #6b7280;
-                    margin: 0;
-                    text-align: right;
-                  "
+                  class="text-xs text-muted-foreground m-0"
+                  style="text-align: right"
                 >
                   {{ dateStr }}
                 </Text>
@@ -97,163 +81,100 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
 
           <!-- CONTENT -->
           <Section
-            style="
-              background: #ffffff;
-              padding: 24px 48px 28px;
-              border-left: 1px solid #e5e7eb;
-              border-right: 1px solid #e5e7eb;
-            "
+            class="bg-white px-10 py-6"
+            style="border-left: 1px solid #e4e4e4; border-right: 1px solid #e4e4e4"
           >
-            <Hr
-              style="
-                border: none;
-                border-top: 1px solid #e5e7eb;
-                margin: 0 0 24px 0;
-              "
-            />
-            <Text
-              style="
-                font-size: 14px;
-                color: #111827;
-                margin: 0 0 16px 0;
-                line-height: 1.6;
-              "
-            >
+            <Hr class="border-border m-0 mb-6" />
+            <Text class="text-sm text-foreground m-0 mb-4">
               Une nouvelle inscription a été enregistrée sur le site ACD.
             </Text>
 
             <!-- Details -->
             <Section
-              style="
-                background: #f9fafb;
-                padding: 16px 20px;
-                border-radius: 12px;
-                margin-bottom: 16px;
-              "
+              class="rounded-2xl px-6 py-4 mb-4"
+              style="background-color: #f9fafb; border: 1px solid #e4e4e4"
             >
               <Text
-                style="
-                  font-size: 10px;
-                  text-transform: uppercase;
-                  letter-spacing: 0.06em;
-                  color: #6b7280;
-                  font-weight: 600;
-                  margin: 0 0 12px 0;
-                "
+                class="text-xs text-muted-foreground m-0 mb-3"
+                style="text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600"
               >
                 Détails de l'inscription
               </Text>
+
               <Row style="border-bottom: 1px solid #e5e7eb">
-                <Column style="padding: 8px 0">
-                  <Text style="font-size: 12px; color: #6b7280; margin: 0"
-                    >Nom</Text
-                  >
+                <Column class="py-2">
+                  <Text class="text-xs text-muted-foreground m-0">Nom</Text>
                 </Column>
-                <Column align="right" style="padding: 8px 0">
-                  <Text
-                    style="
-                      font-size: 13px;
-                      font-weight: 500;
-                      color: #111827;
-                      margin: 0;
-                    "
-                    >{{ firstName }} {{ lastName }}</Text
-                  >
+                <Column align="right" class="py-2">
+                  <Text class="text-sm font-semibold text-foreground m-0">
+                    {{ firstName }} {{ lastName }}
+                  </Text>
                 </Column>
               </Row>
+
               <Row style="border-bottom: 1px solid #e5e7eb">
-                <Column style="padding: 8px 0">
-                  <Text style="font-size: 12px; color: #6b7280; margin: 0"
-                    >Email</Text
-                  >
+                <Column class="py-2">
+                  <Text class="text-xs text-muted-foreground m-0">Email</Text>
                 </Column>
-                <Column align="right" style="padding: 8px 0">
-                  <Text
-                    style="
-                      font-size: 13px;
-                      font-weight: 500;
-                      color: #111827;
-                      margin: 0;
-                    "
-                    >{{ email }}</Text
-                  >
+                <Column align="right" class="py-2">
+                  <Text class="text-sm font-semibold text-foreground m-0">
+                    {{ email }}
+                  </Text>
                 </Column>
               </Row>
+
               <Row style="border-bottom: 1px solid #e5e7eb">
-                <Column style="padding: 8px 0">
-                  <Text style="font-size: 12px; color: #6b7280; margin: 0"
-                    >N° commande</Text
-                  >
+                <Column class="py-2">
+                  <Text class="text-xs text-muted-foreground m-0">N° d'inscription</Text>
                 </Column>
-                <Column align="right" style="padding: 8px 0">
-                  <Text
-                    style="
-                      font-size: 13px;
-                      font-weight: 500;
-                      color: #111827;
-                      margin: 0;
-                    "
-                    >{{ orderNumber }}</Text
-                  >
+                <Column align="right" class="py-2">
+                  <Text class="text-sm font-semibold text-foreground m-0">
+                    {{ registrationId }}
+                  </Text>
                 </Column>
               </Row>
+
+              <Row style="border-bottom: 1px solid #e5e7eb">
+                <Column class="py-2">
+                  <Text class="text-xs text-muted-foreground m-0">N° de paiement</Text>
+                </Column>
+                <Column align="right" class="py-2">
+                  <Text class="text-sm font-semibold text-foreground m-0">
+                    {{ orderNumber }}
+                  </Text>
+                </Column>
+              </Row>
+
               <Row>
-                <Column style="padding: 8px 0">
-                  <Text style="font-size: 12px; color: #6b7280; margin: 0"
-                    >Montant</Text
-                  >
+                <Column class="py-2">
+                  <Text class="text-xs text-muted-foreground m-0">Montant</Text>
                 </Column>
-                <Column align="right" style="padding: 8px 0">
-                  <Text
-                    style="
-                      font-size: 13px;
-                      font-weight: 600;
-                      color: #111827;
-                      margin: 0;
-                    "
-                    >{{ totalPrice.toFixed(2) }} €</Text
-                  >
+                <Column align="right" class="py-2">
+                  <Text class="text-sm font-semibold text-foreground m-0">
+                    {{ totalPrice.toFixed(2) }} €
+                  </Text>
                 </Column>
               </Row>
             </Section>
 
-            <Text
-              style="
-                font-size: 13px;
-                color: #6b7280;
-                margin: 0;
-                line-height: 1.7;
-              "
-            >
+            <Text class="text-sm text-muted-foreground m-0">
               Vous pouvez consulter les détails dans le
               <a
                 :href="`${appUrl}/admin/inscriptions`"
-                style="color: #2563eb; text-decoration: underline"
-                >back office</a
-              >.
+                style="color: #111827; text-decoration: underline"
+              >back office</a>.
             </Text>
           </Section>
 
           <!-- FOOTER -->
           <Section
-            style="
-              background: #ffffff;
-              padding: 20px 48px 28px;
-              border: 1px solid #e5e7eb;
-              border-radius: 0 0 16px 16px;
-              border-top: 1px solid #e5e7eb;
-            "
+            class="bg-white px-10 py-6 rounded-b-2xl"
+            style="border: 1px solid #e4e4e4; border-top: none"
           >
-            <Hr
-              style="
-                border: none;
-                border-top: 1px solid #e5e7eb;
-                margin: 0 0 20px 0;
-              "
-            />
+            <Hr class="border-border m-0 mb-5" />
             <Row>
               <Column>
-                <Text style="font-size: 11px; color: #9ca3af; margin: 0">
+                <Text class="text-xs text-muted m-0" style="line-height: 1.6">
                   Cet email est envoyé automatiquement. Vous recevez ce message
                   car votre adresse est configurée dans les notifications
                   d'inscription.
@@ -265,7 +186,7 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
                   alt="ACD"
                   width="44"
                   height="20"
-                  style="object-fit: contain; display: block; margin-left: auto"
+                  style="display: block; object-fit: contain; margin-left: auto"
                 />
               </Column>
             </Row>
