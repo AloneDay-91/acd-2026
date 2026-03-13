@@ -5,6 +5,7 @@ import {
   Container,
   Section,
   Text,
+  Button,
   Preview,
   Tailwind,
   Img,
@@ -43,11 +44,13 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
   <Html lang="fr">
     <Preview>Confirmation d'inscription ACD — {{ orderNumber }}</Preview>
     <Tailwind :config="tailwindConfig">
-      <Body style="background-color: #f6f9fc; font-family: 'Inter', system-ui, sans-serif; margin: 0; padding: 40px 0;">
-        <Container style="max-width: 560px; margin: 0 auto;">
-
+      <Body class="bg-background py-10 font-sans">
+        <Container class="max-w-xl mx-auto">
           <!-- HEADER -->
-          <Section style="background: #ffffff; padding: 36px 48px 28px; border: 1px solid #e5e7eb; border-radius: 16px 16px 0 0; border-bottom: none;">
+          <Section
+            class="bg-white px-10 pt-8 pb-6 rounded-t-2xl"
+            style="border: 1px solid #e4e4e4; border-bottom: none"
+          >
             <Row>
               <Column>
                 <Img
@@ -55,14 +58,27 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
                   alt="ACD Logo"
                   width="90"
                   height="36"
-                  style="object-fit: contain; display: block;"
+                  class="block"
                 />
               </Column>
-              <Column align="right" style="vertical-align: top;">
-                <Text style="font-size: 22px; font-weight: 300; letter-spacing: 0.06em; text-transform: uppercase; color: #111827; margin: 0 0 4px 0; line-height: 1.2; text-align: right;">
+              <Column align="right" style="vertical-align: top">
+                <Text
+                  class="text-foreground m-0 mb-1"
+                  style="
+                    font-size: 20px;
+                    font-weight: 300;
+                    letter-spacing: 0.06em;
+                    text-transform: uppercase;
+                    text-align: right;
+                    line-height: 1.2;
+                  "
+                >
                   Inscription
                 </Text>
-                <Text style="font-size: 12px; color: #6b7280; margin: 0; text-align: right;">
+                <Text
+                  class="text-xs text-muted-foreground m-0"
+                  style="text-align: right"
+                >
                   {{ orderNumber }} · {{ dateStr }}
                 </Text>
               </Column>
@@ -70,37 +86,49 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
           </Section>
 
           <!-- INTRO -->
-          <Section style="background: #ffffff; padding: 24px 48px 20px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
-            <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 24px 0;" />
-            <Text style="font-size: 14px; color: #111827; margin: 0 0 6px 0; line-height: 1.6;">
+          <Section
+            class="bg-white px-10 py-6"
+            style="border-left: 1px solid #e4e4e4; border-right: 1px solid #e4e4e4"
+          >
+            <Hr class="border-border m-0 mb-6" />
+            <Text class="text-sm text-foreground m-0 mb-2">
               Bonjour <strong>{{ firstName }}</strong>,
             </Text>
-            <Text style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.7;">
-              Votre inscription a bien été enregistrée. Vous trouverez ci-dessous le récapitulatif de votre participation ainsi que la facture en pièce jointe.
+            <Text class="text-sm text-muted-foreground m-0">
+              Votre inscription a bien été enregistrée. Vous trouverez
+              ci-dessous le récapitulatif de votre participation ainsi que la
+              facture en pièce jointe.
             </Text>
           </Section>
 
           <!-- MEALS -->
           <template v-if="meals.length > 0">
-            <Section style="background: #ffffff; padding: 20px 48px 0; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
-              <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 16px 0;" />
-              <Text style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; font-weight: 600; margin: 0 0 12px 0;">
+            <Section
+              class="bg-white px-10 pt-5"
+              style="border-left: 1px solid #e4e4e4; border-right: 1px solid #e4e4e4"
+            >
+              <Hr class="border-border m-0 mb-4" />
+              <Text
+                class="text-xs text-muted-foreground m-0 mb-3"
+                style="text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600"
+              >
                 Repas
               </Text>
             </Section>
             <Section
               v-for="(meal, i) in meals"
               :key="i"
-              style="background: #ffffff; padding: 0 48px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;"
+              class="bg-white px-10"
+              style="border-left: 1px solid #e4e4e4; border-right: 1px solid #e4e4e4"
             >
-              <Row style="border-bottom: 1px solid #f3f4f6;">
-                <Column style="padding: 10px 0;">
-                  <Text style="font-size: 13px; font-weight: 500; color: #111827; margin: 0 0 3px 0;">
+              <Row style="border-bottom: 1px solid #f3f4f6">
+                <Column class="py-2">
+                  <Text class="text-sm font-semibold text-foreground m-0 mb-1">
                     {{ meal.mealName }}
                   </Text>
                   <Text
                     v-if="meal.starter || meal.main || meal.dessert"
-                    style="font-size: 12px; color: #6b7280; margin: 0;"
+                    class="text-xs text-muted-foreground m-0"
                   >
                     {{ [meal.starter, meal.main, meal.dessert].filter(Boolean).join(" · ") }}
                   </Text>
@@ -111,44 +139,60 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
 
           <!-- ACTIVITIES -->
           <template v-if="activities.length > 0">
-            <Section style="background: #ffffff; padding: 20px 48px 0; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
-              <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 16px 0;" />
-              <Text style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; font-weight: 600; margin: 0 0 12px 0;">
+            <Section
+              class="bg-white px-10 pt-5"
+              style="border-left: 1px solid #e4e4e4; border-right: 1px solid #e4e4e4"
+            >
+              <Hr class="border-border m-0 mb-4" />
+              <Text
+                class="text-xs text-muted-foreground m-0 mb-3"
+                style="text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600"
+              >
                 Activités
               </Text>
             </Section>
             <Section
               v-for="(activity, i) in activities"
               :key="i"
-              style="background: #ffffff; padding: 0 48px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;"
+              class="bg-white px-10"
+              style="border-left: 1px solid #e4e4e4; border-right: 1px solid #e4e4e4"
             >
-              <Row style="border-bottom: 1px solid #f3f4f6;">
-                <Column style="padding: 10px 0;">
-                  <Text style="font-size: 13px; color: #111827; margin: 0;">
-                    {{ activity }}
-                  </Text>
+              <Row style="border-bottom: 1px solid #f3f4f6">
+                <Column class="py-2">
+                  <Text class="text-sm text-foreground m-0">{{ activity }}</Text>
                 </Column>
               </Row>
             </Section>
           </template>
 
           <!-- TOTAL -->
-          <Section style="background: #ffffff; padding: 20px 48px 28px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
-            <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 16px 0;" />
+          <Section
+            class="bg-white px-10 py-6"
+            style="border-left: 1px solid #e4e4e4; border-right: 1px solid #e4e4e4"
+          >
+            <Hr class="border-border m-0 mb-4" />
             <Row>
               <Column>
-                <Text style="font-size: 14px; font-weight: 600; color: #111827; margin: 0;">Total</Text>
+                <Text class="text-sm font-semibold text-foreground m-0">Total</Text>
               </Column>
               <Column align="right">
-                <Text style="font-size: 14px; font-weight: 600; color: #111827; margin: 0;">{{ totalPrice.toFixed(2) }} €</Text>
+                <Text class="text-sm font-semibold text-foreground m-0">
+                  {{ totalPrice.toFixed(2) }} €
+                </Text>
               </Column>
             </Row>
           </Section>
 
           <!-- QR CODE -->
-          <Section style="background: #ffffff; padding: 20px 48px 28px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
-            <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 20px 0;" />
-            <Text style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; font-weight: 600; margin: 0 0 16px 0;">
+          <Section
+            class="bg-white px-10 py-6"
+            style="border-left: 1px solid #e4e4e4; border-right: 1px solid #e4e4e4"
+          >
+            <Hr class="border-border m-0 mb-5" />
+            <Text
+              class="text-xs text-muted-foreground m-0 mb-4"
+              style="text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600"
+            >
               QR code de présence
             </Text>
             <Row>
@@ -158,40 +202,45 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
                   alt="QR code de présence"
                   width="160"
                   height="160"
-                  style="display: block; margin: 0 auto; border-radius: 8px;"
+                  style="display: block; margin: 0 auto; border-radius: 8px"
                 />
               </Column>
             </Row>
-            <Text style="font-size: 12px; color: #6b7280; text-align: center; margin: 12px 0 0 0; line-height: 1.6;">
+            <Text
+              class="text-xs text-muted-foreground m-0 mt-3"
+              style="text-align: center; line-height: 1.6"
+            >
               Présentez ce QR code à l'entrée de l'événement.<br />
               Il sera scanné pour valider votre présence.
             </Text>
           </Section>
 
           <!-- FOOTER -->
-          <Section style="background: #ffffff; padding: 20px 48px 28px; border: 1px solid #e5e7eb; border-radius: 0 0 16px 16px; border-top: 1px solid #e5e7eb;">
-            <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 20px 0;" />
+          <Section
+            class="bg-white px-10 py-6 rounded-b-2xl"
+            style="border: 1px solid #e4e4e4; border-top: none"
+          >
+            <Hr class="border-border m-0 mb-5" />
             <Row>
               <Column>
-                <Text style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.6;">
+                <Text class="text-sm text-muted-foreground m-0 mb-1">
                   Merci pour votre participation !
                 </Text>
-                <Text style="font-size: 11px; color: #9ca3af; margin: 4px 0 0 0;">
+                <Text class="text-xs text-muted m-0">
                   © {{ new Date().getFullYear() }} ACD MMI
                 </Text>
               </Column>
-              <Column align="right" style="vertical-align: middle;">
+              <Column align="right" style="vertical-align: middle">
                 <Img
                   src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                   alt="ACD"
                   width="44"
                   height="20"
-                  style="object-fit: contain; display: block; margin-left: auto;"
+                  style="display: block; object-fit: contain; margin-left: auto"
                 />
               </Column>
             </Row>
           </Section>
-
         </Container>
       </Body>
     </Tailwind>

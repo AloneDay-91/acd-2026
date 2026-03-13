@@ -18,14 +18,8 @@ import tailwindConfig from "./tailwind.config";
 defineProps({
   url: String,
   email: String,
-  name: {
-    type: String,
-    default: "",
-  },
-  appUrl: {
-    type: String,
-    default: "http://localhost:3000",
-  },
+  name: { type: String, default: "" },
+  appUrl: { type: String, default: "http://localhost:3000" },
 });
 </script>
 
@@ -59,11 +53,11 @@ defineProps({
               Accédez à votre compte ACD
             </Heading>
 
-            <Text class="text-md text-foreground m-0 mb-4">
+            <Text class="text-base text-foreground m-0 mb-4">
               Bonjour{{ name ? ` ${name}` : "" }},
             </Text>
 
-            <Text class="text-md text-muted-foreground m-0 mb-6">
+            <Text class="text-base text-muted-foreground m-0 mb-6">
               Cliquez sur le bouton ci-dessous pour accéder à votre compte ACD.
               Ce lien est valide pendant 5 minutes.
             </Text>
@@ -82,10 +76,10 @@ defineProps({
               en toute sécurité.
             </Text>
 
-            <Text class="text-md text-muted-foreground m-0">
+            <Text class="text-base text-muted-foreground m-0">
               Cordialement,
             </Text>
-            <Text class="text-md font-semibold text-foreground m-0">
+            <Text class="text-base font-semibold text-foreground m-0">
               L'équipe ACD
             </Text>
           </Section>
@@ -93,13 +87,11 @@ defineProps({
           <!-- Footer -->
           <Section class="py-6 px-10">
             <Text class="text-xs text-muted text-left m-0 mb-6">
-              Cet email a été envoyé à {{ email }}. Si vous préférez ne plus
-              recevoir ce type d'email, vous pouvez gérer vos préférences.
+              Cet email a été envoyé à {{ email }}.
             </Text>
-
             <Row>
               <Column>
-                <Text class="text-xs text-muted text-left m-0 mb-6">
+                <Text class="text-xs text-muted text-left m-0">
                   © {{ new Date().getFullYear() }} ACD. Tous droits réservés.
                 </Text>
               </Column>
