@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import {
+  sortSelectedMealsByDate,
+  sortSelectedActivityIdsByDate,
+} from "~/utils/sortRegistrationItems";
+
 interface PersonalInfo {
   firstName: string;
   lastName: string;
@@ -59,6 +64,13 @@ const props = defineProps<{
 const emit = defineEmits<{
   submit: [];
 }>();
+
+const sortedSelectedMeals = computed(() =>
+  sortSelectedMealsByDate(props.selectedMeals, props.meals),
+);
+const sortedSelectedActivities = computed(() =>
+  sortSelectedActivityIdsByDate(props.selectedActivities, props.activities),
+);
 
 // Fetch IUTs for display
 const { data: iuts } = useLazyFetch<Iut[]>("/api/iuts");
@@ -250,7 +262,7 @@ function formatDate(dateStr: string) {
       </CardHeader>
       <CardContent class="space-y-0 divide-y">
         <div
-          v-for="selectedMeal in selectedMeals"
+          v-for="selectedMeal in sortedSelectedMeals"
           :key="selectedMeal.mealId"
           class="flex items-start justify-between py-3 first:pt-0 last:pb-0"
         >
@@ -363,7 +375,7 @@ function formatDate(dateStr: string) {
       <CardContent>
         <div class="space-y-0 divide-y">
           <div
-            v-for="activityId in selectedActivities"
+            v-for="activityId in sortedSelectedActivities"
             :key="activityId"
             class="flex items-center justify-between py-3 first:pt-0 last:pb-0"
           >

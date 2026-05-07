@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner";
+import {
+  compareMealsByDate,
+  compareActivitiesByDate,
+} from "~/utils/sortRegistrationItems";
 
 definePageMeta({
   layout: "admin",
@@ -127,22 +131,63 @@ const invoiceItems = computed(() => {
 
   const items: { name: string; price: number }[] = [];
 
-  order.value.registration.meals?.forEach((m) => {
+  const sortedMeals = [...(order.value.registration.meals ?? [])].sort(
+    (a, b) =>
+      compareMealsByDate(
+        { date: a.meal?.date, mealType: a.meal?.mealType },
+        { date: b.meal?.date, mealType: b.meal?.mealType },
+      ),
+  );
+  for (const m of sortedMeals) {
     items.push({
       name: m.meal?.name || "Repas",
       price: Number(m.meal?.price || 0),
     });
-  });
+  }
 
-  order.value.registration.activities?.forEach((a) => {
+  const sortedActivities = [...(order.value.registration.activities ?? [])].sort(
+    (a, b) =>
+      compareActivitiesByDate(
+        {
+          date: a.activity?.date,
+          startTime: a.activity?.startTime,
+          allDay: a.activity?.allDay,
+        },
+        {
+          date: b.activity?.date,
+          startTime: b.activity?.startTime,
+          allDay: b.activity?.allDay,
+        },
+      ),
+  );
+  for (const a of sortedActivities) {
     items.push({
       name: a.activity?.name || "Activité",
       price: Number(a.activity?.price || 0),
     });
-  });
+  }
 
   return items;
 });
+
+const showDeleteDialog = ref(false);
+const isDeleting = ref(false);
+
+async function deleteOrder() {
+  if (!order.value) return;
+  isDeleting.value = true;
+  try {
+    await $fetch(`/api/orders/${order.value.id}`, { method: "DELETE" });
+    toast.success("Paiement supprimé");
+    router.push("/admin/orders");
+  } catch (error) {
+    console.error(error);
+    toast.error("Erreur lors de la suppression");
+  } finally {
+    isDeleting.value = false;
+    showDeleteDialog.value = false;
+  }
+}
 </script>
 
 <template>
@@ -165,14 +210,25 @@ const invoiceItems = computed(() => {
           <p class="text-muted-foreground">{{ order.registration.email }}</p>
         </div>
       </div>
-      <Badge
-        :class="[
-          'rounded-full px-3 py-1',
-          paymentStatusColors[order.paymentStatus],
-        ]"
-      >
-        {{ paymentStatusLabels[order.paymentStatus] }}
-      </Badge>
+      <div class="flex items-center gap-2">
+        <Badge
+          :class="[
+            'rounded-full px-3 py-1',
+            paymentStatusColors[order.paymentStatus],
+          ]"
+        >
+          {{ paymentStatusLabels[order.paymentStatus] }}
+        </Badge>
+        <Button
+          variant="ghost"
+          size="icon"
+          class="rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          aria-label="Supprimer le paiement"
+          @click="showDeleteDialog = true"
+        >
+          <Icon name="lucide:trash-2" class="h-4 w-4" />
+        </Button>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -474,4 +530,36 @@ const invoiceItems = computed(() => {
       </div>
     </DialogContent>
   </Dialog>
+
+  <AlertDialog
+    :open="showDeleteDialog"
+    @update:open="showDeleteDialog = $event"
+  >
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Supprimer ce paiement ?</AlertDialogTitle>
+        <AlertDialogDescription>
+          Cette action est irréversible. Le paiement
+          <span class="font-medium">N°{{ order?.orderNumber }}</span>
+          sera supprimé définitivement. L'inscription correspondante restera
+          intacte mais ne sera plus liée à un paiement.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel :disabled="isDeleting">Annuler</AlertDialogCancel>
+        <AlertDialogAction
+          class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          :disabled="isDeleting"
+          @click="deleteOrder"
+        >
+          <Icon
+            v-if="isDeleting"
+            name="lucide:loader-2"
+            class="mr-2 h-4 w-4 animate-spin"
+          />
+          Supprimer
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>
