@@ -10,6 +10,10 @@ import {
   StepperSeparator,
 } from "@/components/ui/stepper";
 import type { Activity, Iut, Meal } from "~/types/registration";
+import {
+  sortSelectedMealsByDate,
+  sortSelectedActivityIdsByDate,
+} from "~/utils/sortRegistrationItems";
 
 definePageMeta({
   layout: "default",
@@ -112,6 +116,14 @@ function prevStep() {
     currentStep.value--;
   }
 }
+
+// Sorted views of selections for display (chronological)
+const sortedSelectedMeals = computed(() =>
+  sortSelectedMealsByDate(selectedMeals.value, meals.value ?? []),
+);
+const sortedSelectedActivities = computed(() =>
+  sortSelectedActivityIdsByDate(selectedActivities.value, activities.value ?? []),
+);
 
 // Helper functions for summary panel
 function getMealById(id: string) {
@@ -530,7 +542,7 @@ async function submitRegistration() {
                     </p>
                     <div class="space-y-2">
                       <div
-                        v-for="sm in selectedMeals"
+                        v-for="sm in sortedSelectedMeals"
                         :key="sm.mealId"
                         class="flex items-start justify-between gap-2"
                       >
@@ -640,7 +652,7 @@ async function submitRegistration() {
                     </p>
                     <div class="space-y-2">
                       <div
-                        v-for="id in selectedActivities"
+                        v-for="id in sortedSelectedActivities"
                         :key="id"
                         class="flex items-start justify-between gap-2"
                       >

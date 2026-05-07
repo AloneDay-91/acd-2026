@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner";
+import {
+  compareMealsByDate,
+  compareActivitiesByDate,
+} from "~/utils/sortRegistrationItems";
 
 definePageMeta({
   layout: "admin",
@@ -135,6 +139,27 @@ function copyToClipboard(text: string) {
   }
 }
 
+const showDeleteDialog = ref(false);
+const isDeleting = ref(false);
+
+async function deleteRegistration() {
+  if (!registration.value) return;
+  isDeleting.value = true;
+  try {
+    await $fetch(`/api/registrations/${registration.value.id}`, {
+      method: "DELETE",
+    });
+    toast.success("Inscription supprimée");
+    router.push("/admin/inscriptions");
+  } catch (error) {
+    console.error(error);
+    toast.error("Erreur lors de la suppression");
+  } finally {
+    isDeleting.value = false;
+    showDeleteDialog.value = false;
+  }
+}
+
 const statusColors: Record<string, string> = {
   CONFIRMED: "bg-green-500/10 text-green-600 dark:text-green-400",
   PENDING: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
@@ -159,7 +184,7 @@ function formatDate(date: string) {
 const invoiceDetails = computed(() => {
   if (!registration.value) return { meals: [], activities: [], subtotal: 0 };
 
-  const meals =
+  const meals = (
     registration.value.meals?.map((m: any) => {
       const choices = [
         m.starterOption?.name && { label: "Entrée", name: m.starterOption.name },
@@ -174,9 +199,10 @@ const invoiceDetails = computed(() => {
         mealType: m.meal?.mealType as "LUNCH" | "DINNER" | undefined,
         choices,
       };
-    }) || [];
+    }) || []
+  ).sort(compareMealsByDate);
 
-  const activities =
+  const activities = (
     registration.value.activities?.map((a: any) => ({
       name: a.activity?.name || "Activité",
       price: Number(a.activity?.price || 0),
@@ -185,7 +211,8 @@ const invoiceDetails = computed(() => {
       endTime: a.activity?.endTime as string | undefined,
       allDay: !!a.activity?.allDay,
       location: a.activity?.location as string | undefined,
-    })) || [];
+    })) || []
+  ).sort(compareActivitiesByDate);
 
   const subtotal =
     meals.reduce((acc, m) => acc + m.price, 0) +
@@ -222,11 +249,22 @@ function formatShortDate(date?: string) {
           <p class="text-muted-foreground">{{ registration.email }}</p>
         </div>
       </div>
-      <Badge
-        :class="['rounded-full px-3 py-1', statusColors[registration.status]]"
-      >
-        {{ statusLabels[registration.status] }}
-      </Badge>
+      <div class="flex items-center gap-2">
+        <Badge
+          :class="['rounded-full px-3 py-1', statusColors[registration.status]]"
+        >
+          {{ statusLabels[registration.status] }}
+        </Badge>
+        <Button
+          variant="ghost"
+          size="icon"
+          class="rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          aria-label="Supprimer l'inscription"
+          @click="showDeleteDialog = true"
+        >
+          <Icon name="lucide:trash-2" class="h-4 w-4" />
+        </Button>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -731,4 +769,38 @@ function formatShortDate(date?: string) {
       </div>
     </DialogContent>
   </Dialog>
+
+  <AlertDialog
+    :open="showDeleteDialog"
+    @update:open="showDeleteDialog = $event"
+  >
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Supprimer cette inscription ?</AlertDialogTitle>
+        <AlertDialogDescription>
+          Cette action est irréversible. L'inscription de
+          <span class="font-medium">
+            {{ registration?.firstName }} {{ registration?.lastName }}
+          </span>
+          ainsi que ses repas, activités et le paiement associé seront supprimés
+          définitivement.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel :disabled="isDeleting">Annuler</AlertDialogCancel>
+        <AlertDialogAction
+          class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          :disabled="isDeleting"
+          @click="deleteRegistration"
+        >
+          <Icon
+            v-if="isDeleting"
+            name="lucide:loader-2"
+            class="mr-2 h-4 w-4 animate-spin"
+          />
+          Supprimer
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>
