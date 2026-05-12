@@ -7,7 +7,7 @@ import { Icon } from "#components";
 
 const config = useRuntimeConfig();
 const demo = config.public.demo as {
-  mode: boolean;
+  mode: boolean | string;
   adminEmail: string;
   adminPassword: string;
   userEmail: string;
@@ -17,9 +17,10 @@ const demo = config.public.demo as {
 const isOpen = ref(true);
 const dismissed = ref(false);
 
+const isDemoMode = computed(() => demo.mode === true || demo.mode === "true");
 const hasAdmin = computed(() => !!(demo.adminEmail && demo.adminPassword));
 const hasUser = computed(() => !!(demo.userEmail && demo.userPassword));
-const shouldShow = computed(() => demo.mode && (hasAdmin.value || hasUser.value) && !dismissed.value);
+const shouldShow = computed(() => isDemoMode.value && (hasAdmin.value || hasUser.value) && !dismissed.value);
 
 function copy(text: string, label: string) {
   navigator.clipboard.writeText(text);
