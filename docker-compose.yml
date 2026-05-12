@@ -2,7 +2,7 @@ services:
   # REVERSE PROXY (Gère le HTTPS et les ports 80/443)
   caddy:
     image: caddy:2-alpine
-    container_name: acd-proxy
+    container_name: acd-proxy-demo
     restart: unless-stopped
     ports:
       - "80:80"
@@ -21,9 +21,9 @@ services:
   # TON APP NUXT 4
   app:
     # Image pré-construite par le CI et publiée sur GHCR — zéro build sur le serveur
-    image: ${APP_IMAGE:-ghcr.io/festival-mmi-2026/acd-app:latest}
+    image: ${APP_IMAGE:-ghcr.io/aloneday-91/acd-app:latest}
     pull_policy: always
-    container_name: acd-app
+    container_name: acd-app-demo
     restart: unless-stopped
     env_file:
       - .env
