@@ -1,7 +1,7 @@
 node_modules
-# .output is built by the CI before "docker build" and is COPYed into the
-# image — it must NOT be excluded from the build context.
 .nuxt
+.output
+.data
 .git
 .gitignore
 *.log
@@ -12,9 +12,12 @@ node_modules
 # Tests
 test
 tests
+playwright-report
+test-results
 playwright.config.ts
 vitest.config.ts
 
 # Divers
 README.md
 *.csv
+.DS_Store
