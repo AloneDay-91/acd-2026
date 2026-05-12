@@ -21,6 +21,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "reka-ui";
+import DemoCredentialsBanner from "@/components/DemoCredentialsBanner.vue";
 
 const session = useSession();
 const route = useRoute();
@@ -468,5 +469,6 @@ const searchOpen = ref(false);
         <slot />
       </div>
     </SidebarInset>
+    <DemoCredentialsBanner />
   </SidebarProvider>
 </template>

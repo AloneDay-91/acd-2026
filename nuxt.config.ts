@@ -10,6 +10,18 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
+  runtimeConfig: {
+    public: {
+      demo: {
+        mode: process.env.DEMO_MODE === "true",
+        adminEmail: process.env.DEMO_ADMIN_EMAIL ?? "",
+        adminPassword: process.env.DEMO_ADMIN_PASSWORD ?? "",
+        userEmail: process.env.DEMO_USER_EMAIL ?? "",
+        userPassword: process.env.DEMO_USER_PASSWORD ?? "",
+      },
+    },
+  },
+
   app: {
     head: {
       htmlAttrs: {

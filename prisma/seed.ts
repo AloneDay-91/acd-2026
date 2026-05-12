@@ -9,6 +9,8 @@ const prisma = new PrismaClient({ adapter: pool });
 const DEMO_MODE = process.env.DEMO_MODE === "true";
 const DEMO_ADMIN_EMAIL = process.env.DEMO_ADMIN_EMAIL;
 const DEMO_ADMIN_PASSWORD = process.env.DEMO_ADMIN_PASSWORD;
+const DEMO_USER_EMAIL = process.env.DEMO_USER_EMAIL;
+const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD;
 
 // ============================================
 // IUTs
@@ -214,37 +216,38 @@ function chance(p: number): boolean {
 }
 
 // ============================================
-// Admin demo creation via Better-Auth
+// Demo user creation via Better-Auth
 // ============================================
-async function createDemoAdmin() {
-  if (!DEMO_ADMIN_EMAIL || !DEMO_ADMIN_PASSWORD) {
-    console.log("ℹ️  DEMO_ADMIN_EMAIL/DEMO_ADMIN_PASSWORD non définis, skip création admin.");
-    return;
-  }
-
+async function createDemoUser(opts: {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: "admin" | null;
+  emoji: string;
+  label: string;
+}) {
   const { hashPassword } = await import("better-auth/crypto");
 
-  const existing = await prisma.user.findUnique({
-    where: { email: DEMO_ADMIN_EMAIL },
-  });
+  const existing = await prisma.user.findUnique({ where: { email: opts.email } });
   if (existing) {
-    console.log(`♻️  Suppression de l'admin existant (${DEMO_ADMIN_EMAIL})...`);
+    console.log(`♻️  Suppression de ${opts.label} existant (${opts.email})...`);
     await prisma.user.delete({ where: { id: existing.id } });
   }
 
   const userId = randomUUID();
-  const hashedPassword = await hashPassword(DEMO_ADMIN_PASSWORD);
+  const hashedPassword = await hashPassword(opts.password);
   const now = new Date();
 
   await prisma.user.create({
     data: {
       id: userId,
-      email: DEMO_ADMIN_EMAIL,
-      name: "Admin Démo",
-      firstName: "Admin",
-      lastName: "Démo",
+      email: opts.email,
+      name: `${opts.firstName} ${opts.lastName}`,
+      firstName: opts.firstName,
+      lastName: opts.lastName,
       emailVerified: true,
-      role: "admin",
+      role: opts.role ?? undefined,
       createdAt: now,
       updatedAt: now,
     },
@@ -262,7 +265,37 @@ async function createDemoAdmin() {
     },
   });
 
-  console.log(`🔐 Compte admin créé : ${DEMO_ADMIN_EMAIL}`);
+  console.log(`${opts.emoji} Compte ${opts.label} créé : ${opts.email}`);
+}
+
+async function createDemoAccounts() {
+  if (DEMO_ADMIN_EMAIL && DEMO_ADMIN_PASSWORD) {
+    await createDemoUser({
+      email: DEMO_ADMIN_EMAIL,
+      password: DEMO_ADMIN_PASSWORD,
+      firstName: "Admin",
+      lastName: "Démo",
+      role: "admin",
+      emoji: "🔐",
+      label: "admin",
+    });
+  } else {
+    console.log("ℹ️  DEMO_ADMIN_EMAIL/DEMO_ADMIN_PASSWORD non définis, skip admin.");
+  }
+
+  if (DEMO_USER_EMAIL && DEMO_USER_PASSWORD) {
+    await createDemoUser({
+      email: DEMO_USER_EMAIL,
+      password: DEMO_USER_PASSWORD,
+      firstName: "Utilisateur",
+      lastName: "Démo",
+      role: null,
+      emoji: "👤",
+      label: "utilisateur",
+    });
+  } else {
+    console.log("ℹ️  DEMO_USER_EMAIL/DEMO_USER_PASSWORD non définis, skip utilisateur.");
+  }
 }
 
 // ============================================
@@ -499,7 +532,7 @@ async function main() {
     }
   }
 
-  await createDemoAdmin();
+  await createDemoAccounts();
 
   console.log("✅ Seed terminé !");
 }

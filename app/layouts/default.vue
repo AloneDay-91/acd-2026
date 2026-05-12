@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Header from "@/components/header.vue";
 import Footer from "@/components/footer.vue";
+import DemoCredentialsBanner from "@/components/DemoCredentialsBanner.vue";
 </script>
 
 <template>
@@ -11,5 +12,6 @@ import Footer from "@/components/footer.vue";
       <slot />
     </main>
     <Footer />
+    <DemoCredentialsBanner />
   </div>
 </template>
