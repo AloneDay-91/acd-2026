@@ -16,15 +16,22 @@ const demo = config.public.demo as {
 
 const isOpen = ref(true);
 const dismissed = ref(false);
+const copiedKey = ref<string | null>(null);
+let copyTimer: ReturnType<typeof setTimeout> | null = null;
 
 const isDemoMode = computed(() => demo.mode === true || demo.mode === "true");
 const hasAdmin = computed(() => !!(demo.adminEmail && demo.adminPassword));
 const hasUser = computed(() => !!(demo.userEmail && demo.userPassword));
 const shouldShow = computed(() => isDemoMode.value && (hasAdmin.value || hasUser.value) && !dismissed.value);
 
-function copy(text: string, label: string) {
+function copy(text: string, label: string, key: string) {
   navigator.clipboard.writeText(text);
   toast.success(`${label} copié`);
+  copiedKey.value = key;
+  if (copyTimer) clearTimeout(copyTimer);
+  copyTimer = setTimeout(() => {
+    copiedKey.value = null;
+  }, 1800);
 }
 </script>
 
@@ -66,18 +73,30 @@ function copy(text: string, label: string) {
           <button
             type="button"
             class="w-full text-left font-mono text-xs bg-muted hover:bg-muted/70 rounded px-2 py-1.5 flex items-center justify-between gap-2 transition-colors"
-            @click="copy(demo.adminEmail, 'Email admin')"
+            @click="copy(demo.adminEmail, 'Email admin', 'admin-email')"
           >
             <span class="truncate">{{ demo.adminEmail }}</span>
-            <Icon name="lucide:copy" class="size-3 shrink-0 text-muted-foreground" />
+            <Icon
+              :name="copiedKey === 'admin-email' ? 'lucide:check' : 'lucide:copy'"
+              :class="[
+                'size-3 shrink-0 transition-colors',
+                copiedKey === 'admin-email' ? 'text-emerald-500' : 'text-muted-foreground',
+              ]"
+            />
           </button>
           <button
             type="button"
             class="w-full text-left font-mono text-xs bg-muted hover:bg-muted/70 rounded px-2 py-1.5 flex items-center justify-between gap-2 transition-colors"
-            @click="copy(demo.adminPassword, 'Mot de passe admin')"
+            @click="copy(demo.adminPassword, 'Mot de passe admin', 'admin-pwd')"
           >
             <span class="truncate">{{ demo.adminPassword }}</span>
-            <Icon name="lucide:copy" class="size-3 shrink-0 text-muted-foreground" />
+            <Icon
+              :name="copiedKey === 'admin-pwd' ? 'lucide:check' : 'lucide:copy'"
+              :class="[
+                'size-3 shrink-0 transition-colors',
+                copiedKey === 'admin-pwd' ? 'text-emerald-500' : 'text-muted-foreground',
+              ]"
+            />
           </button>
         </div>
 
@@ -90,18 +109,30 @@ function copy(text: string, label: string) {
           <button
             type="button"
             class="w-full text-left font-mono text-xs bg-muted hover:bg-muted/70 rounded px-2 py-1.5 flex items-center justify-between gap-2 transition-colors"
-            @click="copy(demo.userEmail, 'Email utilisateur')"
+            @click="copy(demo.userEmail, 'Email utilisateur', 'user-email')"
           >
             <span class="truncate">{{ demo.userEmail }}</span>
-            <Icon name="lucide:copy" class="size-3 shrink-0 text-muted-foreground" />
+            <Icon
+              :name="copiedKey === 'user-email' ? 'lucide:check' : 'lucide:copy'"
+              :class="[
+                'size-3 shrink-0 transition-colors',
+                copiedKey === 'user-email' ? 'text-emerald-500' : 'text-muted-foreground',
+              ]"
+            />
           </button>
           <button
             type="button"
             class="w-full text-left font-mono text-xs bg-muted hover:bg-muted/70 rounded px-2 py-1.5 flex items-center justify-between gap-2 transition-colors"
-            @click="copy(demo.userPassword, 'Mot de passe utilisateur')"
+            @click="copy(demo.userPassword, 'Mot de passe utilisateur', 'user-pwd')"
           >
             <span class="truncate">{{ demo.userPassword }}</span>
-            <Icon name="lucide:copy" class="size-3 shrink-0 text-muted-foreground" />
+            <Icon
+              :name="copiedKey === 'user-pwd' ? 'lucide:check' : 'lucide:copy'"
+              :class="[
+                'size-3 shrink-0 transition-colors',
+                copiedKey === 'user-pwd' ? 'text-emerald-500' : 'text-muted-foreground',
+              ]"
+            />
           </button>
         </div>
 

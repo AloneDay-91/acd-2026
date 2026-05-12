@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import "vue-sonner/style.css";
 import { Toaster } from "@/components/ui/sonner";
+import DemoCredentialsBanner from "@/components/DemoCredentialsBanner.vue";
 </script>
 
 <template>
@@ -8,4 +9,5 @@ import { Toaster } from "@/components/ui/sonner";
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <DemoCredentialsBanner />
 </template>
